@@ -170,15 +170,19 @@ def Ranking(Aw,Bw):
     for j in [A1,A2,B1,B2]:
         Temp+=1
         Temp3=[]
-        for i in range(10):
-            Temp2={}
-            if j.iloc[i].name in AllWallets:
-                Temp2["type"]="Wallet"
-            else:
-                Temp2["type"]="Contract"
-            Temp2["name"]=j.iloc[i].name
-            Temp2["value"]=int(j.iloc[i].value)
-            Temp3.append(Temp2)
+        for i in range(5):
+            try:
+                Temp2={}
+                if j.iloc[i].name in AllWallets:
+                    Temp2["type"]="Wallet"
+                else:
+                    Temp2["type"]="Contract"
+                Temp2["name"]=j.iloc[i].name
+                Temp2["value"]=int(j.iloc[i].value)
+                Temp3.append(Temp2)
+            except:
+                pass
+        
         if Temp==1:
             Sal["To_Sum"]=Temp3
         if Temp==2:
