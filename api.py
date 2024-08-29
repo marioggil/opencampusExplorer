@@ -154,6 +154,39 @@ def makeData(Aw,Bw):
     Sal=Sal1+Sal2
     return Sal
 
+def Ranking(Aw,Bw):
+    AllWallets=set()
+    for data in Bw:
+        if data["color"]=='#000000' or data["color"]=='#27ae60':
+            AllWallets.add(data["id"])
+    df=pd.DataFrame(Aw)
+    A1=pd.pivot_table(df, values="value",index=["to_wallet"],aggfunc="sum").sort_values(by=['value'],ascending=False)
+    A2=pd.pivot_table(df, values="value",index=["to_wallet"],aggfunc="count").sort_values(by=['value'],ascending=False)
+    B1=pd.pivot_table(df, values="value",index=["from_wallet"],aggfunc="sum").sort_values(by=['value'],ascending=False)
+    B2=pd.pivot_table(df, values="value",index=["from_wallet"],aggfunc="count").sort_values(by=['value'],ascending=False)
+    Temp=0
+    Sal={"To_Sum":[],"To_Count":[],"From_Sum":[],"From_Count":[]}
+    for j in [A1,A2,B1,B2]:
+        Temp+=1
+        Temp3=[]
+        for i in range(10):
+            Temp2={}
+            if j.iloc[i].name in AllWallets:
+                Temp2["type"]="Wallet"
+            else:
+                Temp2["type"]="Contract"
+            Temp2["name"]=j.iloc[i].name
+            Temp2["value"]=int(j.iloc[i].value)
+            Temp3.append(Temp2)
+        if Temp==1:
+            Sal["To_Sum"]=Temp3
+        if Temp==2:
+            Sal["To_Count"]=Temp3
+        if Temp==3:
+            Sal["From_Sum"]=Temp3
+        if Temp==4:
+            Sal["From_Count"]=Temp3
+    return Sal
 
 
 @app.get("/wallet/{IDwallet}")
@@ -161,6 +194,7 @@ def read_items(IDwallet:str,request: Request):
     print(1233,IDwallet)
     Aw,Bw=TxAllWallets(IDwallet)
     Resultado=makeData(Aw,Bw)
+    Ranks=Ranking(Aw,Bw)
 
     return templates.TemplateResponse("index.html", {"request": request})
 
