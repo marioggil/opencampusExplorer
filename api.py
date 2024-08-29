@@ -7,9 +7,11 @@ from fastapi.staticfiles import StaticFiles
 from fastapi import Query, File, UploadFile,HTTPException
 from starlette.middleware.cors import CORSMiddleware
 import pandas as pd
-import requests
+import requests, json
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+
+from models import db
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -160,9 +162,36 @@ def makeData(Aw,Bw):
 
 @app.get("/{IDwallet}")
 def read_items(IDwallet:str,request: Request):
-    print(IDwallet)
-    Aw,Bw=TxAllWallets("0x907fC0C7E6b84F0229c13F57D413F72D33Ff3bAf")
-    Resultado=makeData(Aw,Bw)
-    return templates.TemplateResponse("index.html", {"request": request})
+    wallet = db(db.wallets.wallet_id == IDwallet).select().last()
+    if wallet:
+        search = db(db.datas.wallet == wallet.id).select()
+        Resultado = []
+        for i in search:
+            data = {}
+            if 'url' in i:
+                data = { 'data': { 'id': i.uuid, 'url': i.url, 'color': i.color } }
+            elif 'source' in i and 'target' in i:
+                data = { 'data': { 'id': i.uuid, 'source': i.source, 'target': i.target, 'width': i.width } },
+            
+            Resultado.append(data)
+    else:
+        Aw,Bw=TxAllWallets(IDwallet)#("0x907fC0C7E6b84F0229c13F57D413F72D33Ff3bAf")
+        Resultado=makeData(Aw,Bw)
+        
+        wallet = db.wallets.insert(wallet_id = IDwallet)
+        db.commit()
+        for i in Resultado:
+            db.datas.insert(
+                wallet = wallet,
+                uuid = i.id,
+                url = i.url if 'url' in i else None,
+                color = i.color if 'color' in i else None,
+                source = i.source if 'source' in i else None,
+                target = i.target if 'target' in i else None,
+                width = i.width if 'width' in i else None,
+            )
+        db.commit()
+        
+    return templates.TemplateResponse("index.html", {"request": request, "IDwallet": IDwallet})
 
     
