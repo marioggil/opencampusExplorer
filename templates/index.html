@@ -10,22 +10,29 @@
         </div>
 
         <div>
-            <div class="field">
-                <label class="label">Name</label>
-                <div class="control">
-                    <input class="input" type="text" placeholder="Enter Wallet ID" name="IDwallet">
+            <div class="wallet_db">
+
+                <div class="field">                    
+                    <div class="control">
+                        <input class="input" type="text" placeholder="Enter Wallet ID" name="IDwallet">
+                    </div>
                 </div>
-            </div>
-            
-            <div class="field is-grouped">
-                <div class="control">
-                    <button class="button is-link"
-                            hx-get="/wallet"
-                            hx-trigger="click"
-                            hx-target=".result"
-                            hx-include="[name='IDwallet']">Submit</button>
+                
+                <div class="field is-grouped">
+                    <div class="control">
+                        <button class="button is-link"
+                                hx-get="/wallet"
+                                hx-trigger="click"
+                                hx-target=".result"
+                                hx-include="[name='IDwallet']">Submit</button>
+                    </div>
                 </div>
+
+
             </div>
+
+            <div class="wallet_db" hx-get="get_wallets" hx-trigger="load" hx-swap="innerHTML"></div>
+
         </div>
 
         <div class="result"></div>

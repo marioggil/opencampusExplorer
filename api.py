@@ -210,6 +210,8 @@ def search_data(IDwallet):
 @app.get("/wallet")
 def read_items(request: Request,IDwallet:str = None):
     
+    
+    
     Resultado = search_data(IDwallet)   
     
     if Resultado:        
@@ -242,3 +244,8 @@ def read_items(request: Request,IDwallet:str = None):
 @app.get("/")
 def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
+
+@app.get("/get_wallets")
+def get_wallets(request: Request):
+    wallets = db(db.wallets).select()
+    return templates.TemplateResponse("wallets_db.html", {"request": request,"wallets":wallets})

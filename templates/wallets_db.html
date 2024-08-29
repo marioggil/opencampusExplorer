@@ -1,0 +1,14 @@
+<script>
+    function fillInputAndSubmit(walletId) {
+        // Establece el valor del input con el ID del wallet
+        document.querySelector('input[name="IDwallet"]').value = walletId;
+        
+        // Simula el clic en el botón para enviar el formulario
+        document.querySelector('button.button').click();
+    }
+</script>
+
+<h1 class="subtitle">Wallets available</h1>
+{% for wallet in wallets %}
+<a href="#" onclick="fillInputAndSubmit('{{ wallet.wallet_id }}'); return false;">{{ wallet.wallet_id }}</a>
+{% endfor %}
