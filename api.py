@@ -12,6 +12,8 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 import json
 import uuid
+from models.db import db
+
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
@@ -148,46 +150,59 @@ def makeData(Aw,Bw):
             Sal1.append({ "id": TxT["from_wallet"], "url": "https://opencampus-codex.blockscout.com/address/"+TxT["from_wallet"], "color": colorContract(isContract(TxT["from_wallet"])) } )
         if TxT["to_wallet"] not in listWallet:
             Sal1.append({ "id": TxT["to_wallet"], "url": "https://opencampus-codex.blockscout.com/address/"+TxT["to_wallet"], "color": colorContract(isContract(TxT["to_wallet"])) } )
-        Sal2.append({" id": TxT["id"], "source": TxT["from_wallet"], "target": TxT["to_wallet"], "width":TxT["width"] } )
+        Sal2.append({"id": TxT["id"], "source": TxT["from_wallet"], "target": TxT["to_wallet"], "width":TxT["width"] } )
         counter+=1
         print("%s de %s"%(counter, Tot))
     Sal=Sal1+Sal2
     return Sal
 
-
-
-@app.get("/wallet/{IDwallet}")
-def read_items(IDwallet:str,request: Request):
+def search_data(IDwallet):
+    Resultado = []
+    
     wallet = db(db.wallets.wallet_id == IDwallet).select().last()
     if wallet:
         search = db(db.datas.wallet == wallet.id).select()
         Resultado = []
         for i in search:
             data = {}
-            if 'url' in i:
-                data = { 'data': { 'id': i.uuid, 'url': i.url, 'color': i.color } }
-            elif 'source' in i and 'target' in i:
-                data = { 'data': { 'id': i.uuid, 'source': i.source, 'target': i.target, 'width': i.width } },
+            if i.uuid.startswith('0x'):
+                data = {'data':{'id':i.uuid,'url':i.url,'color':i.color}}
+            else:
+                data = {'data':{'id':i.uuid,'source':i.source,'target':i.target,'width':i.width}}
             
             Resultado.append(data)
+            
+    return Resultado
+
+
+
+@app.get("/wallet/{IDwallet}")
+def read_items(IDwallet:str,request: Request):
+    
+    Resultado = search_data(IDwallet)   
+    
+    if Resultado:        
+        Resultado = json.dumps(Resultado)
     else:
-        Aw,Bw=TxAllWallets(IDwallet)#("0x907fC0C7E6b84F0229c13F57D413F72D33Ff3bAf")
+        Aw,Bw=TxAllWallets(IDwallet)#"0x907fC0C7E6b84F0229c13F57D413F72D33Ff3bAf")
         Resultado=makeData(Aw,Bw)
-        
         wallet = db.wallets.insert(wallet_id = IDwallet)
         db.commit()
-        for i in Resultado:
+        for i in Resultado:            
             db.datas.insert(
                 wallet = wallet,
-                uuid = i.id,
-                url = i.url if 'url' in i else None,
-                color = i.color if 'color' in i else None,
-                source = i.source if 'source' in i else None,
-                target = i.target if 'target' in i else None,
-                width = i.width if 'width' in i else None,
+                uuid = i['id'],
+                url = i['url'] if 'url' in i else None,
+                color = i['color'] if 'color' in i else None,
+                source = i['source'] if 'source' in i else None,
+                target = i['target'] if 'target' in i else None,
+                width = i['width'] if 'width' in i else None,
             )
         db.commit()
-        
-    return templates.TemplateResponse("index.html", {"request": request, "IDwallet": IDwallet})
+    
+        Resultado = search_data(IDwallet)
+        Resultado = json.dumps(Resultado)
+    
+    return templates.TemplateResponse("index.html", {"request": request, "IDwallet": IDwallet, "Resultado":Resultado})
 
     
