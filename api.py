@@ -135,23 +135,18 @@ def TxAllWallets(wallet,maxloop=1000):
 
 def makeData(Aw,Bw):
     listWallet=set()
-    Sal1=""
+    Sal1=[]
     for walletT in Bw:
-        Sal1=Sal1+"""{ data: { id: '%s', url: '%s', color: '%s' } },
-    """%(walletT["id"],walletT["url"],walletT["color"])
+        Sal1.append( { "id": walletT["id"], "url": walletT["url"], "color": walletT["color"] } )
         listWallet.add(walletT["id"])
-    Sal2=""
+    Sal2=[]
     counter=1
     for TxT in Aw: 
         if TxT["from_wallet"] not in listWallet:
-            Sal1=Sal1+"""{ data: { id: '%s', url: '%s', color: '%s' } },
-    """%(TxT["from_wallet"],"https://opencampus-codex.blockscout.com/address/"+TxT["from_wallet"],colorContract(isContract(TxT["from_wallet"])))
+            Sal1.append({ "id": TxT["from_wallet"], "url": "https://opencampus-codex.blockscout.com/address/"+TxT["from_wallet"], "color": colorContract(isContract(TxT["from_wallet"])) } )
         if TxT["to_wallet"] not in listWallet:
-            Sal1=Sal1+"""{ data: { id: '%s', url: '%s', color: '%s' } },
-    """%(TxT["to_wallet"],"https://opencampus-codex.blockscout.com/address/"+TxT["to_wallet"],colorContract(isContract(TxT["to_wallet"])))
-        Sal2=Sal2+"""{ data: { id: '%s', source: '%s', target: '%s', width: %s } },
-        """%(TxT["id"],TxT["from_wallet"],TxT["to_wallet"],TxT["width"])
-        print(counter)
+            Sal1.append({ "id": TxT["to_wallet"], "url": "https://opencampus-codex.blockscout.com/address/"+TxT["to_wallet"], "color": colorContract(isContract(TxT["to_wallet"])) } )
+        Sal2.append({" id": TxT["id"], "source": TxT["from_wallet"], "target": TxT["to_wallet"], "width":TxT["width"] } )
         counter+=1
     Sal=Sal1+Sal2
     return Sal
