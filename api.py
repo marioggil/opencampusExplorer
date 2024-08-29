@@ -7,11 +7,10 @@ from fastapi.staticfiles import StaticFiles
 from fastapi import Query, File, UploadFile,HTTPException
 from starlette.middleware.cors import CORSMiddleware
 import pandas as pd
-import requests, json
+import requests, json, uuid
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-import json
-import uuid
+
 from models.db import db
 
 app = FastAPI()
@@ -208,10 +207,8 @@ def search_data(IDwallet):
             
     return Resultado
 
-
-
-@app.get("/wallet/{IDwallet}")
-def read_items(IDwallet:str,request: Request):
+@app.get("/wallet")
+def read_items(request: Request,IDwallet:str = None):
     
     Resultado = search_data(IDwallet)   
     
@@ -238,6 +235,10 @@ def read_items(IDwallet:str,request: Request):
         Resultado = json.dumps(Resultado)
 
         Ranks=Ranking(Aw,Bw)
+        print(Ranks)    
     
-    
-    return templates.TemplateResponse("index.html", {"request": request, "IDwallet": IDwallet, "Resultado":Resultado})
+    return templates.TemplateResponse("wallet.html", {"request": request, "IDwallet": IDwallet, "Resultado":Resultado})
+
+@app.get("/")
+def index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
