@@ -10,7 +10,8 @@ import pandas as pd
 import requests
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-
+import json
+import uuid
 app = FastAPI()
 #app.mount("/statics", StaticFiles(directory="statics"), name="statics")
 templates = Jinja2Templates(directory="templates")
@@ -141,6 +142,7 @@ def makeData(Aw,Bw):
         listWallet.add(walletT["id"])
     Sal2=[]
     counter=1
+    Tot=len(Aw)
     for TxT in Aw: 
         if TxT["from_wallet"] not in listWallet:
             Sal1.append({ "id": TxT["from_wallet"], "url": "https://opencampus-codex.blockscout.com/address/"+TxT["from_wallet"], "color": colorContract(isContract(TxT["from_wallet"])) } )
@@ -148,6 +150,7 @@ def makeData(Aw,Bw):
             Sal1.append({ "id": TxT["to_wallet"], "url": "https://opencampus-codex.blockscout.com/address/"+TxT["to_wallet"], "color": colorContract(isContract(TxT["to_wallet"])) } )
         Sal2.append({" id": TxT["id"], "source": TxT["from_wallet"], "target": TxT["to_wallet"], "width":TxT["width"] } )
         counter+=1
+        print("%s de %s"%(counter, Tot))
     Sal=Sal1+Sal2
     return Sal
 
@@ -158,6 +161,7 @@ def read_items(IDwallet:str,request: Request):
     print(IDwallet)
     Aw,Bw=TxAllWallets("0x907fC0C7E6b84F0229c13F57D413F72D33Ff3bAf")
     Resultado=makeData(Aw,Bw)
+
     return templates.TemplateResponse("index.html", {"request": request})
 
     

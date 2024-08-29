@@ -21,6 +21,10 @@
 <body>
     The wallet in analisis: Sustituir
     <div id="cy"></div>
+</br>
+    <button id="zoomButton">0xa482AE7d753b33cB06Fd6872443E902cB6BEe592</button>1600,Wallet
+</br>
+    <button id="zoomButton2">0x907fC0C7E6b84F0229c13F57D413F72D33Ff3bAf</button>30,Wallet
     <script>
         // Initialize Cytoscape
         var cy = cytoscape({
@@ -1128,7 +1132,10 @@
                         'background-color': 'data(color)',
                         'label': 'data(id)',
                         'width': 10,
-                        'height': 10
+                        'height': 10,
+                        'border-width': 1,
+                        'border-color': 'black'
+
                     }
                 },
 
@@ -1175,6 +1182,68 @@
           cy.on('mouseout', 'node', function(event) {
             event.target.style('text-opacity', 0);
           });
+
+        // Assume you have a button with id "zoomButton"
+        document.getElementById('zoomButton').addEventListener('click', function() {
+            // Replace 'targetNodeId' with the ID of the node you want to zoom to
+            const targetNode = cy.$('#0xa482AE7d753b33cB06Fd6872443E902cB6BEe592');
+            
+            if (targetNode.length > 0) {
+            cy.animate({
+                center: {
+                eles: targetNode
+                },
+                zoom: 4, // Adjust this value to set the desired zoom level
+                duration: 1000 // Animation duration in milliseconds
+            });
+            
+        //    targetNode.animate({
+        //        style: { 'border-width': 5,
+        //        'border-color': 'red'
+        //     }
+        //      }, {
+        //        duration: 300
+        //      });
+          
+              
+        //      nodes.difference(targetNode).animate({
+        //        style: { 'border-width': 1,
+        //        'border-color': 'black'  } 
+        //      }, {
+        //        duration: 300
+        //      });
+            }
+        });
+        document.getElementById('zoomButton2').addEventListener('click', function() {
+            
+            const targetNode = cy.$('#0x907fC0C7E6b84F0229c13F57D413F72D33Ff3bAf');
+            
+            if (targetNode.length > 0) {
+            cy.animate({
+                center: {
+                eles: targetNode
+                },
+                zoom: 4, 
+                duration: 1000 
+            });
+            
+        //    targetNode.animate({
+        //        style: { 'border-width': 5,
+        //        'border-color': 'red'
+        //     }
+        //      }, {
+        //        duration: 300
+        //      });
+          
+              
+        //    nodes.difference(targetNode).animate({
+        //        style: {'border-width': 1,
+        //        'border-color': 'black' } 
+        //      }, {
+        //        duration: 300
+        //      });
+            }
+        });
     </script>
 </body>
 </html>
