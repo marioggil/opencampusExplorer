@@ -156,10 +156,10 @@ def makeData(Aw,Bw):
 
 
 
-@app.get("/{IDwallet}")
+@app.get("/wallet/{IDwallet}")
 def read_items(IDwallet:str,request: Request):
-    print(IDwallet)
-    Aw,Bw=TxAllWallets("0x907fC0C7E6b84F0229c13F57D413F72D33Ff3bAf")
+    print(1233,IDwallet)
+    Aw,Bw=TxAllWallets(IDwallet)
     Resultado=makeData(Aw,Bw)
 
     return templates.TemplateResponse("index.html", {"request": request})
