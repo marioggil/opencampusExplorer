@@ -195,7 +195,8 @@ def Ranking(Aw,Bw):
 
 def search_data(IDwallet):
     Resultado = []
-    
+    ranking_to={}
+    ranking_from={}
     wallet = db(db.wallets.wallet_id == IDwallet).select().last()
     if wallet:
         search = db(db.datas.wallet == wallet.id).select()
@@ -206,17 +207,26 @@ def search_data(IDwallet):
                 data = {'data':{'id':i.uuid,'url':i.url,'color':i.color}}
             else:
                 data = {'data':{'id':i.uuid,'source':i.source,'target':i.target,'width':i.width}}
-            
+                if i.source in ranking_to.keys():
+                    ranking_to[i.source]=ranking_to[i.source]+1
+                else:
+                    ranking_to[i.source]=1
+                
+                if i.target in ranking_from.keys():
+                    ranking_from[i.target]=ranking_from[i.target]+1
+                else:
+                    ranking_from[i.target]=1
+            print(ranking_to,ranking_from)
             Resultado.append(data)
             
-    return Resultado
+    return Resultado,ranking_to,ranking_from
 
 @app.get("/wallet")
 def read_items(request: Request,IDwallet:str = None):
     
     
     
-    Resultado = search_data(IDwallet)   
+    Resultado,ranking_to,ranking_from = search_data(IDwallet)   
     
     if Resultado:        
         Resultado = json.dumps(Resultado)
@@ -237,11 +247,11 @@ def read_items(request: Request,IDwallet:str = None):
             )
         db.commit()
     
-        Resultado = search_data(IDwallet)
+        Resultado,ranking_to,ranking_from = search_data(IDwallet)
         Resultado = json.dumps(Resultado)
 
-        Ranks=Ranking(Aw,Bw)
-        print(Ranks)    
+        #Ranks=Ranking(Aw,Bw)
+        print(ranking_to,ranking_from)    
     
     return templates.TemplateResponse("wallet.html", {"request": request, "IDwallet": IDwallet, "Resultado":Resultado})
 
