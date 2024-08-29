@@ -156,6 +156,39 @@ def makeData(Aw,Bw):
     Sal=Sal1+Sal2
     return Sal
 
+def Ranking(Aw,Bw):
+    AllWallets=set()
+    for data in Bw:
+        if data["color"]=='#000000' or data["color"]=='#27ae60':
+            AllWallets.add(data["id"])
+    df=pd.DataFrame(Aw)
+    A1=pd.pivot_table(df, values="value",index=["to_wallet"],aggfunc="sum").sort_values(by=['value'],ascending=False)
+    A2=pd.pivot_table(df, values="value",index=["to_wallet"],aggfunc="count").sort_values(by=['value'],ascending=False)
+    B1=pd.pivot_table(df, values="value",index=["from_wallet"],aggfunc="sum").sort_values(by=['value'],ascending=False)
+    B2=pd.pivot_table(df, values="value",index=["from_wallet"],aggfunc="count").sort_values(by=['value'],ascending=False)
+    Temp=0
+    Sal={"To_Sum":[],"To_Count":[],"From_Sum":[],"From_Count":[]}
+    for j in [A1,A2,B1,B2]:
+        Temp+=1
+        Temp3=[]
+        for i in range(10):
+            Temp2={}
+            if j.iloc[i].name in AllWallets:
+                Temp2["type"]="Wallet"
+            else:
+                Temp2["type"]="Contract"
+            Temp2["name"]=j.iloc[i].name
+            Temp2["value"]=int(j.iloc[i].value)
+            Temp3.append(Temp2)
+        if Temp==1:
+            Sal["To_Sum"]=Temp3
+        if Temp==2:
+            Sal["To_Count"]=Temp3
+        if Temp==3:
+            Sal["From_Sum"]=Temp3
+        if Temp==4:
+            Sal["From_Count"]=Temp3
+    return Sal
 def search_data(IDwallet):
     Resultado = []
     
@@ -178,31 +211,10 @@ def search_data(IDwallet):
 
 @app.get("/wallet/{IDwallet}")
 def read_items(IDwallet:str,request: Request):
-    
-    Resultado = search_data(IDwallet)   
-    
-    if Resultado:        
-        Resultado = json.dumps(Resultado)
-    else:
-        Aw,Bw=TxAllWallets(IDwallet)#"0x907fC0C7E6b84F0229c13F57D413F72D33Ff3bAf")
-        Resultado=makeData(Aw,Bw)
-        wallet = db.wallets.insert(wallet_id = IDwallet)
-        db.commit()
-        for i in Resultado:            
-            db.datas.insert(
-                wallet = wallet,
-                uuid = i['id'],
-                url = i['url'] if 'url' in i else None,
-                color = i['color'] if 'color' in i else None,
-                source = i['source'] if 'source' in i else None,
-                target = i['target'] if 'target' in i else None,
-                width = i['width'] if 'width' in i else None,
-            )
-        db.commit()
-    
-        Resultado = search_data(IDwallet)
-        Resultado = json.dumps(Resultado)
-    
-    return templates.TemplateResponse("index.html", {"request": request, "IDwallet": IDwallet, "Resultado":Resultado})
+    print(1233,IDwallet)
+    Aw,Bw=TxAllWallets(IDwallet)
+    Resultado=makeData(Aw,Bw)
+
+    return templates.TemplateResponse("index.html", {"request": request})
 
     
