@@ -189,6 +189,7 @@ def Ranking(Aw,Bw):
         if Temp==4:
             Sal["From_Count"]=Temp3
     return Sal
+
 def search_data(IDwallet):
     Resultado = []
     
@@ -211,10 +212,29 @@ def search_data(IDwallet):
 
 @app.get("/wallet/{IDwallet}")
 def read_items(IDwallet:str,request: Request):
-    print(1233,IDwallet)
-    Aw,Bw=TxAllWallets(IDwallet)
-    Resultado=makeData(Aw,Bw)
-
-    return templates.TemplateResponse("index.html", {"request": request})
-
     
+    Resultado = search_data(IDwallet)   
+    
+    if Resultado:        
+        Resultado = json.dumps(Resultado)
+    else:
+        Aw,Bw=TxAllWallets(IDwallet)#"0x907fC0C7E6b84F0229c13F57D413F72D33Ff3bAf")
+        Resultado=makeData(Aw,Bw)
+        wallet = db.wallets.insert(wallet_id = IDwallet)
+        db.commit()
+        for i in Resultado:            
+            db.datas.insert(
+                wallet = wallet,
+                uuid = i['id'],
+                url = i['url'] if 'url' in i else None,
+                color = i['color'] if 'color' in i else None,
+                source = i['source'] if 'source' in i else None,
+                target = i['target'] if 'target' in i else None,
+                width = i['width'] if 'width' in i else None,
+            )
+        db.commit()
+    
+        Resultado = search_data(IDwallet)
+        Resultado = json.dumps(Resultado)
+    
+    return templates.TemplateResponse("index.html", {"request": request, "IDwallet": IDwallet, "Resultado":Resultado})
