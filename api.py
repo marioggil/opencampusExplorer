@@ -236,5 +236,8 @@ def read_items(IDwallet:str,request: Request):
     
         Resultado = search_data(IDwallet)
         Resultado = json.dumps(Resultado)
+
+        Ranks=Ranking(Aw,Bw)
+    
     
     return templates.TemplateResponse("index.html", {"request": request, "IDwallet": IDwallet, "Resultado":Resultado})
