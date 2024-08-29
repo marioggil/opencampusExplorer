@@ -6,42 +6,50 @@
     <div class="column"></div>
     <div class="column">
         <div class="titulo">
-            <h1 class="title">Title</h1>
+            <h1 class="title">Explorer Educhain</h1>
         </div>
 
-        <div>
-            <div class="wallet_db">
-
-                <div class="field">                    
-                    <div class="control">
-                        <input class="input" type="text" placeholder="Enter Wallet ID" name="IDwallet">
-                    </div>
+        <div class="wallet_db">
+            <div class="field">                    
+                <div class="control">
+                    <input class="input" type="text" placeholder="Enter Wallet ID" name="IDwallet">
                 </div>
-                
-                <div class="field is-grouped">
-                    <div class="control">
-                        <button class="button is-link"
-                                hx-get="/wallet"
-                                hx-trigger="click"
-                                hx-target=".result"
-                                hx-include="[name='IDwallet']">Submit</button>
-                    </div>
-                </div>
-
-
             </div>
-
-            <div class="wallet_db" hx-get="get_wallets" hx-trigger="load" hx-swap="innerHTML"></div>
-
+            
+            <div class="field is-grouped">
+                <div class="control">
+                    <button class="button is-link"
+                            hx-get="/wallet"
+                            hx-trigger="click"
+                            hx-target=".result"
+                            hx-include="[name='IDwallet']"
+                            hx-indicator=".spinner"
+                            hx-on::before-request="document.querySelector('.result-wrapper').classList.add('loading'); document.querySelector('.wallet_db').classList.add('loading'); document.querySelector('#wallet-db-container').classList.add('loading'); document.querySelector('.spinner').classList.add('show');"
+                            hx-on::after-request="document.querySelector('.result-wrapper').classList.remove('loading'); document.querySelector('.wallet_db').classList.remove('loading'); document.querySelector('#wallet-db-container').classList.remove('loading'); document.querySelector('.spinner').classList.remove('show');">
+                        Submit
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <div class="result"></div>
+        <div id="wallet-db-container" class="wallet_db" hx-get="get_wallets" hx-trigger="load, refreshWallets from:body" hx-swap="innerHTML"></div>
+
+        <div class="spinner">
+            <img alt="Result loading..." class="htmx-indicator" width="100" src="{{ url_for('static', path='bars.svg') }}"/>
+        </div>
+        <div class="result-wrapper">
+            <div class="result"></div>
+        </div>
     </div>
     <div class="column"></div>
 </div>
 
-
-
-
+<script>
+document.body.addEventListener('htmx:afterRequest', function(event) {
+    if (event.detail.elt.matches('button')) {
+        htmx.trigger('#wallet-db-container', 'refreshWallets');
+    }
+});
+</script>
 
 {% endblock %}

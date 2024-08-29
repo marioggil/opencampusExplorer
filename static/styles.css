@@ -11,3 +11,52 @@
     border-width: 1px;
     margin: 1rem 0rem;
 }
+
+.htmx-indicator{
+    opacity:0;
+    transition: opacity 500ms ease-in;
+}
+.htmx-request .htmx-indicator{
+    opacity:1
+}
+.htmx-request.htmx-indicator{
+    opacity:1
+}
+
+.result-wrapper, .wallet_db, #wallet-db-container {
+    position: relative;
+  }
+  
+  .result-wrapper.loading::before,
+  .wallet_db.loading::before,
+  #wallet-db-container.loading::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.7);
+    z-index: 1;
+    cursor: not-allowed;
+  }
+  
+  .spinner {
+    display: none;
+    position: absolute;
+    top: 38rem;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+  }
+  
+  .spinner.show {
+    display: block;
+  }
+  
+  .wallet_db.loading input,
+  .wallet_db.loading button,
+  #wallet-db-container.loading * {
+    pointer-events: none;
+    opacity: 0.6;
+  }
