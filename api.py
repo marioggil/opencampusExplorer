@@ -192,6 +192,12 @@ def Ranking(Aw,Bw):
         if Temp==4:
             Sal["From_Count"]=Temp3
     return Sal
+def get_wallet_actions(walletsactions):
+    sorted_wallets_by_actions = sorted(walletsactions.items(), key=lambda x:x[1], reverse=True)
+    if len (sorted_wallets_by_actions)>5:
+        return sorted_wallets_by_actions[:5]
+    else:
+        return sorted_wallets_by_actions
 
 def search_data(IDwallet):
     Resultado = []
@@ -211,15 +217,14 @@ def search_data(IDwallet):
                     ranking_to[i.source]=ranking_to[i.source]+1
                 else:
                     ranking_to[i.source]=1
-                
                 if i.target in ranking_from.keys():
                     ranking_from[i.target]=ranking_from[i.target]+1
                 else:
                     ranking_from[i.target]=1
-            print(ranking_to,ranking_from)
             Resultado.append(data)
-            
-    return Resultado,ranking_to,ranking_from
+    return Resultado,get_wallet_actions(ranking_to),get_wallet_actions(ranking_from)
+
+
 
 @app.get("/wallet")
 def read_items(request: Request,IDwallet:str = None):
