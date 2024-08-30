@@ -12,7 +12,7 @@
         <div class="wallet_db">
             <div class="field">                    
                 <div class="control">
-                    <input class="input" type="text" placeholder="Enter Wallet ID" name="IDwallet">
+                    <input class="input" type="text" placeholder="Enter a wallet ID" name="IDwallet">
                 </div>
             </div>
             
@@ -32,7 +32,7 @@
             </div>
         </div>
 
-        <div id="wallet-db-container" class="wallet_db" hx-get="get_wallets" hx-trigger="load, refreshWallets from:body" hx-swap="innerHTML"></div>
+        
 
         <div class="spinner">
             <img alt="Result loading..." class="htmx-indicator" width="100" src="{{ url_for('static', path='bars.svg') }}"/>
@@ -40,6 +40,8 @@
         <div class="result-wrapper">
             <div class="result"></div>
         </div>
+
+        <div id="wallet-db-container" class="wallet_db" hx-get="get_wallets" hx-trigger="load, refreshWallets from:body" hx-swap="innerHTML"></div>
     </div>
     <div class="column"></div>
 </div>

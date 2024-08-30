@@ -256,9 +256,9 @@ def read_items(request: Request,IDwallet:str = None):
         Resultado = json.dumps(Resultado)
 
         #Ranks=Ranking(Aw,Bw)
-        print(ranking_to,ranking_from)    
+    #print(ranking_to,ranking_from)    
     
-    return templates.TemplateResponse("wallet.html", {"request": request, "IDwallet": IDwallet, "Resultado":Resultado})
+    return templates.TemplateResponse("wallet.html", {"request": request, "IDwallet": IDwallet, "Resultado":Resultado,"ranking_to":ranking_to,"ranking_from":ranking_from,"enumerate":enumerate})
 
 @app.get("/")
 def index(request: Request):
