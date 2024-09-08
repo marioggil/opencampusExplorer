@@ -12,7 +12,8 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from typing import List, Set, Tuple, Dict
 from models.db import db
-
+import private.modelcontract as LLMC
+import os
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
@@ -23,6 +24,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 def isContract(hash: str) -> bool:
     """
@@ -436,3 +438,221 @@ def get_wallets(request: Request):
     """
     wallets = db(db.wallets).select()
     return templates.TemplateResponse("wallets_db.html", {"request": request, "wallets": wallets})
+
+### New index
+def metricsBlocks():
+    response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/blocks?type=block").content)
+    return BlocksIndex(response)
+
+def BlocksIndex(items):
+    list_data=[]
+    for item in items["items"]:
+        data=  {"hash":item['hash'],
+        'height':item['height'],
+        'size':item['size'],
+        'miner':item['miner']['hash'],
+        'difficulty':item['difficulty'],
+        'burnt_fees':item['burnt_fees'],
+        'base_fee_per_gas':item['base_fee_per_gas'],
+        'parent_hash':item['parent_hash'],
+        'total_difficulty':item['total_difficulty'],
+            'tx_count':item['tx_count'],
+            'timestamp':item['timestamp'],
+            "gas_used":int(item['gas_used']),
+        'gas_limit':item['gas_limit'],
+        'tx_fees':int(item['tx_fees'])
+        }
+    list_data.append(data)
+    df=pd.DataFrame(list_data)
+    mean_size=int(df["size"].mean())
+    mean_tx_count=int(df['tx_count'].mean())
+    mean_tx_fees=int(df['tx_fees'].mean())
+    mean_gas_used=int(df["gas_used"].mean())
+    output={"items":list_data,"mean_size":mean_size,"mean_tx_count":mean_tx_count,"mean_tx_fees":mean_tx_fees,"mean_gas_used":mean_gas_used}
+    return output
+
+
+
+##Index
+# 'height' "hash" 'tx_count'
+
+
+#head hash, 'height', 'tx_count', 'timestamp'
+#block 'height','size','parent_hash','miner'
+#gas, fees and others "gas_used" 'gas_limit' 'burnt_fees' 'base_fee_per_gas' 'total_difficulty' 'difficulty'
+
+def stadistics_index(items):
+    output={'network_utilization_percentage':items['network_utilization_percentage'],
+            'total_blocks':items['total_blocks'],
+            'total_transactions':items['total_transactions'],
+            'transactions_today':items['transactions_today'],
+            'total_addresses':items['total_addresses'],
+            'gas_used_today':items['gas_used_today'],
+            'average_block_time':int(items['average_block_time'])
+    }
+    return output
+def stadistics_blockchain():
+    response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/stats").content)
+    return stadistics_index(response)
+def metricsTx():
+    response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/transactions?filter=validated").content)
+    return TxIndex(response)
+
+
+
+def TxIndex(items):
+    list_data=[]
+    for item in items["items"]:
+        data=  {'timestamp':item['timestamp'],
+        "fee":int(item["fee"]["value"]),
+        'block':item["block"],
+        'method':item["method"],
+        "to":item["to"]["hash"],
+        "from":item["from"]["hash"],
+        'tx_burnt_fee':item['tx_burnt_fee'],
+        "hash":item["hash"],
+        'priority_fee':item['priority_fee'],
+        'tx_types':item['tx_types'],
+        'gas_used':int(item['gas_used']),
+        'created_contract':item['created_contract'],
+        }
+        list_data.append(data)
+    df=pd.DataFrame(list_data)
+    mean_fee=int(df["fee"].mean())
+    mean_gas_used=int(df["gas_used"].mean())
+    output={"items":list_data,"mean_fee":mean_fee,"mean_gas_used":mean_gas_used}
+    return output 
+
+@app.get("/indexv2", response_class=HTMLResponse)
+def index2(request: Request):
+    """
+    Renders a page with all  metrics of Educhain.
+
+    Args:
+        request (Request): The request object.
+
+    Returns:
+        HTMLResponse: Renders the 'index.html' template with metrics.
+    """
+    BlocksToIndex=metricsBlocks()
+    Data_general=stadistics_blockchain()
+    TxtoIndex=metricsTx()
+    
+    return templates.TemplateResponse("index.html", {"request": request})
+
+
+# New tx
+
+def TxDetail(hash):
+    response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/transactions/%s"%(hash)).content)
+    item=response
+    data=  {'timestamp':item['timestamp'],
+        "fee":int(item["fee"]["value"]),
+        'block':item["block"],
+        'method':item["method"],
+        "to":item["to"]["hash"],
+        "from":item["from"]["hash"],
+        'tx_burnt_fee':item['tx_burnt_fee'],
+        "hash":item["hash"],
+        'priority_fee':item['priority_fee'],
+        'tx_types':item['tx_types'],
+        'gas_used':int(item['gas_used']),
+        'created_contract':item['created_contract'],
+        }
+    return data
+
+
+@app.get("/Tx", response_class=HTMLResponse)
+def Txhtml(request: Request):
+    """
+    Renders a page with metrics of Transactions.
+
+    Args:
+        request (Request): The request object.
+
+    Returns:
+        HTMLResponse: Renders the 'index.html' template with metrics.
+    """
+    hash="0xfa649ccc6d1308b4e620773bd5db94d45c5b35a47162789f81f6c0794ceae923"
+    Tx=TxDetail(hash)
+    print(Tx)
+    return templates.TemplateResponse("index.html", {"request": request})
+
+#New block
+
+def BlockDetail(block):
+    response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/blocks/%s"%(block)).content)
+    item=response
+    data=  {"hash":item['hash'],
+        'height':item['height'],
+        'size':item['size'],
+        'miner':item['miner']['hash'],
+        'difficulty':item['difficulty'],
+        'burnt_fees':item['burnt_fees'],
+        'base_fee_per_gas':item['base_fee_per_gas'],
+        'parent_hash':item['parent_hash'],
+        'total_difficulty':item['total_difficulty'],
+            'tx_count':item['tx_count'],
+            'timestamp':item['timestamp'],
+            "gas_used":int(item['gas_used']),
+        'gas_limit':item['gas_limit'],
+        'tx_fees':int(item['tx_fees'])
+        }  
+    return data
+
+@app.get("/block", response_class=HTMLResponse)
+def Blockhtml(request: Request):
+    """
+    Renders a page with metrics of blocks.
+
+    Args:
+        request (Request): The request object.
+
+    Returns:
+        HTMLResponse: Renders the 'index.html' template with metrics .
+    """
+    hash=3566
+    Block=BlockDetail(hash)
+    print(Block)
+    return templates.TemplateResponse("index.html", {"request": request})
+
+# New contract
+
+def contractInfo(item):
+    data={"is_vyper_contract":item['is_vyper_contract'],
+            'is_fully_verified':item['is_fully_verified'],
+            'is_blueprint':item['is_blueprint'],
+            'source_code':item['source_code'],
+            'verified_at': item['verified_at'],
+            'is_verified': item['is_verified'],
+            'name': item['name'],
+            'language': item['language']
+    }
+    return data
+def contractsDetail(hash):
+    if not isContract(hash):
+        return {"message":"No contract"}
+    response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/smart-contracts/%s"%(hash)).content)
+    data=contractInfo(response)
+    DetailContract=LLMC.AnalysisContract(data["source_code"])
+    try:
+        DetailContract=json.loads(DetailContract)
+    except:
+        DetailContract=json.loads(DetailContract[DetailContract.find("{"):DetailContract.find("}")+1])
+    return data,DetailContract
+
+@app.get("/contract", response_class=HTMLResponse)
+def contracthtml(request: Request):
+    """
+    Renders a page with metrics of contracts.
+
+    Args:
+        request (Request): The request object.
+
+    Returns:
+        HTMLResponse: Renders the 'index.html' template with metrics.
+    """
+    hash="0xbA21243Bfb918F9a047f94Ef11914Afd0cE16A4b"
+    data,DetailContract=contractsDetail(hash)
+    print(data,DetailContract)
+    return templates.TemplateResponse("index.html", {"request": request})
