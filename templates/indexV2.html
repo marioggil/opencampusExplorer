@@ -1,0 +1,73 @@
+
+
+
+
+    <p class="title is-4">Network utilization percentage: {{ Data_general["network_utilization_percentage"]}}</p>
+    <p class="title is-4">Total blocks: {{ Data_general["total_blocks"]}}</p>
+    <p class="title is-4">Total transactions: {{ Data_general["total_transactions"]}}</p>
+    <p class="title is-4">Transactions today: {{ Data_general["transactions_today"]}}</p>
+    <p class="title is-4">Total addresses: {{ Data_general["total_addresses"]}}</p>
+    <p class="title is-4">Gas used today: {{ Data_general["gas_used_today"]}}</p>
+    <p class="title is-4">Average block time {{ Data_general["average_block_time"]}}</p>
+
+    
+                    {% for i in BlocksToIndex %}
+                    <div class="card">
+                        <td>{{ i["height"]}}</td>
+                    </div>
+                    <div class="card-content">
+                        <div class="media">
+                          
+                          <div class="media-content">
+                            <p class="title is-4">hash: {{ i["hash"]}}</p>
+                            <p class="title is-4">Size: {{ i["size"]}} Mean 50 Blocks:{{mean_size_Bl}}</p>
+                            <p class="subtitle is-6">Miner: {{ i["miner"]}} </p>
+                            <p class="subtitle is-6">Difficulty: {{ i["difficulty"]}} </p>
+                            <p class="subtitle is-6">Burnt fees: {{ i["burnt_fees"]}} </p>
+                            <p class="title is-4"># of Tx: {{ i["tx_count"]}} Mean 50 Blocks: {{mean_tx_count_Bl}}</p>
+                            <p class="title is-9">Timestamp: {{ i["timestamp"]}}</p>
+                            <p class="subtitle is-6">Gas used: {{ i["gas_used"]}} Mean 50 Blocks: {{mean_gas_used_Bl}}</p>
+                            <p class="subtitle is-6">Gas limit: {{ i["gas_limit"]}} </p>
+                            <p class="subtitle is-6">Tx fees: {{ i["tx_fees"]}} Mean 50 Blocks: {{mean_tx_fees_Bl}}</p>
+
+                    </div>
+                    <footer class="card-footer">
+                        <a href="/block/{{ i["height"]}}" class="card-footer-item">Go to block</a>
+                    </footer>
+                    </div>
+                    {% endfor %}
+ 
+                    
+                   <br></br>
+        
+                    {% for i in TxtoIndex %}
+                    <div class="card">
+                        <td>{{ i["hash"]}}</td>
+                    </div>
+                    <div class="card-content">
+                        <div class="media">
+                          
+                          <div class="media-content">
+                            <p class="title is-4">fee: {{ i["fee"]}} Mean of 50:{{mean_fee_tx}}</p>
+                            <p class="title is-4">block: {{ i["block"]}} </p>
+                            <p class="subtitle is-6">method: {{ i["method"]}} </p>
+                            <p class="subtitle is-6">to: {{ i["to"]}} </p>
+                            <p class="subtitle is-6">from: {{ i["from"]}} </p>
+                            <p class="title is-4">Tx burnt fee: {{ i["tx_burnt_fee"]}} </p>
+                            <p class="title is-9">Timestamp: {{ i["timestamp"]}}</p>
+                            <p class="subtitle is-6">Tx types: {{ i["tx_types"]}} </p>
+                            <p class="subtitle is-6">Gas limit: {{ i["gas_limit"]}} </p>
+                            <p class="subtitle is-6">Gas used: {{ i["gas_used"]}} Mean of 50: {{mean_gas_used_tx}} </p>
+                            <p class="subtitle is-6">Priority fee: {{ i["priority_fee"]}} </p>
+                            <p class="subtitle is-6">Created contract: {{ i["created_contract"]}} </p>
+
+                    </div>
+                    <footer class="card-footer">
+                        <a href="/tx/{{ i["hash"]}}" class="card-footer-item">Go to block</a>
+                    </footer>
+                    </div>
+                    {% endfor %}
+
+
+
+    

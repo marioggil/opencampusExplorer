@@ -462,12 +462,13 @@ def BlocksIndex(items):
         'gas_limit':item['gas_limit'],
         'tx_fees':int(item['tx_fees'])
         }
-    list_data.append(data)
+        list_data.append(data)
     df=pd.DataFrame(list_data)
     mean_size=int(df["size"].mean())
     mean_tx_count=int(df['tx_count'].mean())
     mean_tx_fees=int(df['tx_fees'].mean())
     mean_gas_used=int(df["gas_used"].mean())
+
     output={"items":list_data,"mean_size":mean_size,"mean_tx_count":mean_tx_count,"mean_tx_fees":mean_tx_fees,"mean_gas_used":mean_gas_used}
     return output
 
@@ -532,13 +533,15 @@ def index2(request: Request):
         request (Request): The request object.
 
     Returns:
-        HTMLResponse: Renders the 'index.html' template with metrics.
+        HTMLResponse: Renders the 'indexV2.html' template with metrics.
     """
     BlocksToIndex=metricsBlocks()
+
     Data_general=stadistics_blockchain()
     TxtoIndex=metricsTx()
-    
-    return templates.TemplateResponse("index.html", {"request": request})
+        
+
+    return templates.TemplateResponse("indexV2.html", {"request": request,"Data_general":Data_general,"BlocksToIndex":BlocksToIndex["items"],"TxtoIndex":TxtoIndex["items"],"mean_fee_tx":TxtoIndex["mean_fee"],"mean_gas_used_tx":TxtoIndex["mean_gas_used"],"mean_size_Bl":BlocksToIndex["mean_size"],"mean_tx_count_Bl":BlocksToIndex["mean_tx_count"],"mean_tx_fees_Bl":BlocksToIndex["mean_tx_fees"],"mean_gas_used_Bl":BlocksToIndex["mean_gas_used"],"enumerate": enumerate})
 
 
 # New tx
@@ -576,7 +579,7 @@ def Txhtml(request: Request):
     hash="0xfa649ccc6d1308b4e620773bd5db94d45c5b35a47162789f81f6c0794ceae923"
     Tx=TxDetail(hash)
     print(Tx)
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse("index.html", {"request": request,"Tx":Tx})
 
 #New block
 
