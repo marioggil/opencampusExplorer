@@ -1,7 +1,6 @@
 import os
 import json
 
-
 prompt="""You are an expert in blockchain smart contract analysis. You will be provided with the source code of a smart contract. Your task is to perform a comprehensive analysis of the contract, covering the following aspects:
 
 Functionality Analysis:
