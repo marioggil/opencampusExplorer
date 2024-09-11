@@ -123,15 +123,13 @@
                                 <th>Gas used</th>
                                 <!--<th>Priority fee</th>-->
                                 <!--<th>Created contract</th>-->
-                                <th>link</th>
                             </tr>
                         </thead>
                         
                         <tbody>
                             {% for i in TxtoIndex %}
                             <tr>
-                                
-                                <th title="{{ i["hash"] }}">{{ i["hash"][:10] + '...' }}</th>
+                                <th><a href="/tx/{{ i["hash"]}}" title="{{ i["hash"] }}" class="card-footer-item">{{ i["hash"][:10] + '...' }}&nbsp; <img src="/static/link-solid.svg" alt=""></a> </th>
                                 <td>{{ i["fee"]}} <br> <span>Mean of 50 {{mean_fee_tx}}</span></td>
                                 <td>{{ i["block"] }}</td>
                                 <!-- <td>{{ i["method"] }}</td>-->
@@ -144,7 +142,6 @@
                                 <td>{{ i["gas_used"]}} <br> <span>Mean of 50 {{mean_gas_used_tx}}</span></td>
                                 <!--<td>{{ i["priority_fee"]}}</td>-->
                                 <!--<td>{{ i["created_contract"]}}</td>-->
-                                <td><a href="/tx/{{ i["hash"]}}" class="card-footer-item"><img src="/static/link-solid.svg" alt=""></a></td>
                                 
                             </tr>
                             {% endfor %}
