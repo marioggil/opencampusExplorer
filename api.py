@@ -412,7 +412,7 @@ def read_items(request: Request, IDwallet: str = None):
         }
     )
     
-@app.get("/", response_class=HTMLResponse)
+@app.get("/wallets", response_class=HTMLResponse)
 def index(request: Request, wallet: str = None):
     """
     Renders the index page.
@@ -533,7 +533,7 @@ def TxIndex(items):
     output={"items":list_data,"mean_fee":mean_fee,"mean_gas_used":mean_gas_used}
     return output 
 
-@app.get("/indexv2", response_class=HTMLResponse)
+@app.get("/", response_class=HTMLResponse)
 def index2(request: Request):
     """
     Renders a page with all  metrics of Educhain.
@@ -650,7 +650,7 @@ def contractsDetail(hash):
         DetailContract=json.loads(DetailContract[DetailContract.find("{"):DetailContract.find("}")+1])
     return data,DetailContract
 
-@app.get("/contract", response_class=HTMLResponse)
+@app.get("/contracts", response_class=HTMLResponse)
 def contracthtml(request: Request):
     """
     Renders a page with metrics of contracts.
