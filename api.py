@@ -14,6 +14,7 @@ from typing import List, Set, Tuple, Dict
 from models.db import db
 import private.modelcontract as LLMC
 import os
+
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
@@ -24,7 +25,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 def isContract(hash: str) -> bool:
     """
@@ -413,17 +413,18 @@ def read_items(request: Request, IDwallet: str = None):
     )
     
 @app.get("/", response_class=HTMLResponse)
-def index(request: Request):
+def index(request: Request, wallet: str = None):
     """
     Renders the index page.
 
     Args:
         request (Request): The request object.
+        wallet (str, optional): Optional wallet parameter.
 
     Returns:
         HTMLResponse: Renders the 'index.html' template.
     """
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse("index.html", {"request": request, "wallet": wallet})
 
 @app.get("/get_wallets", response_class=HTMLResponse)
 def get_wallets(request: Request):
@@ -492,14 +493,14 @@ def stadistics_index(items):
             'average_block_time':int(items['average_block_time'])
     }
     return output
+
 def stadistics_blockchain():
     response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/stats").content)
     return stadistics_index(response)
+
 def metricsTx():
     response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/transactions?filter=validated").content)
     return TxIndex(response)
-
-
 
 def TxIndex(items):
     list_data=[]
@@ -543,9 +544,6 @@ def index2(request: Request):
 
     return templates.TemplateResponse("indexV2.html", {"request": request,"Data_general":Data_general,"BlocksToIndex":BlocksToIndex["items"],"TxtoIndex":TxtoIndex["items"],"mean_fee_tx":TxtoIndex["mean_fee"],"mean_gas_used_tx":TxtoIndex["mean_gas_used"],"mean_size_Bl":BlocksToIndex["mean_size"],"mean_tx_count_Bl":BlocksToIndex["mean_tx_count"],"mean_tx_fees_Bl":BlocksToIndex["mean_tx_fees"],"mean_gas_used_Bl":BlocksToIndex["mean_gas_used"],"enumerate": enumerate})
 
-
-# New tx
-
 def TxDetail(hash):
     response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/transactions/%s"%(hash)).content)
     item=response
@@ -563,7 +561,6 @@ def TxDetail(hash):
         'created_contract':item['created_contract'],
         }
     return data
-
 
 @app.get("/Tx", response_class=HTMLResponse)
 def Txhtml(request: Request):
@@ -632,6 +629,7 @@ def contractInfo(item):
             'language': item['language']
     }
     return data
+
 def contractsDetail(hash):
     if not isContract(hash):
         return {"message":"No contract"}

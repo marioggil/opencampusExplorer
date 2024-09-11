@@ -12,7 +12,7 @@
         <div class="wallet_db">
             <div class="field">                    
                 <div class="control">
-                    <input class="input" type="text" placeholder="Enter a wallet ID" name="IDwallet">
+                    <input class="input" type="text" placeholder="Enter a wallet ID" name="IDwallet" value="{{ wallet if wallet else '' }}">
                 </div>
             </div>
             
@@ -32,13 +32,17 @@
             </div>
         </div>
 
-        
-
         <div class="spinner">
             <img alt="Result loading..." class="htmx-indicator" width="100" src="{{ url_for('static', path='bars.svg') }}"/>
         </div>
         <div class="result-wrapper">
-            <div class="result"></div>
+            <div class="result"
+                {% if wallet %}
+                    hx-get="/wallet"
+                    hx-trigger="load"
+                    hx-target=".result"
+                    hx-include="[name='IDwallet']"
+                {% endif %}></div>
         </div>
 
         <div id="wallet-db-container" class="wallet_db" hx-get="get_wallets" hx-trigger="load, refreshWallets from:body" hx-swap="innerHTML"></div>
