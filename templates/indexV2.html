@@ -60,35 +60,36 @@
                     <table class="table is-fullwidth is-striped is-hoverable is-fullwidth">
                         <thead>
                             <tr>
+                                <th>Block</th>
                                 <th>Hash</th>
                                 <th>Size</th>
-                                <th>Miner</th>
-                                <th>Difficulty</th>
+                                <!-- <th>Miner</th> -->
+                                <!--<th>Difficulty</th> -->
                                 <th>Burnt fees</th>
                                 <th># of Tx</th>
                                 <th>Timestamp</th>
                                 <th>Gas used</th>
-                                <th>Gas limit</th>
+                                <!--<th>Gas limit</th>-->
                                 <th>Tx fees</th>
-                                <th>Block</th>
+                                
                             </tr>
                         </thead>
                         
                         <tbody>
                             {% for i in BlocksToIndex %}
                             <tr>
-                                
+                                <td><a href="/block/{{ i["height"]}}" class="card-footer-item">{{ i["height"]}}<img src="/static/link-solid.svg" alt=""></a></td>
                                 <th title="{{ i["hash"] }}">{{ i["hash"][:10] + '...' }}</th>
-                                <td>{{ i["size"] }} Mean 50 Blocks {{ mean_size_Bl }}</td>
-                                <td title="{{ i["miner"] }}">{{ i["miner"][:10] + '...' }}</td>
-                                <td>{{ i["difficulty"]}}</td>
+                                <td>{{ i["size"] }} <br> Mean 50 Blocks {{ mean_size_Bl }}</td>
+                                <!-- <td title="{{ i["miner"] }}">{{ i["miner"][:10] + '...' }}</td>-->
+                                <!--<td>{{ i["difficulty"]}}</td> -->
                                 <td title="{{ i["burnt_fees"]}}">{{ i["burnt_fees"][:10] + '...'}}</td>
-                                <td>{{ i["tx_count"]}} Mean 50 Blocks {{mean_tx_count_Bl}} </td>
+                                <td>{{ i["tx_count"]}} <br> Mean 50 Blocks {{mean_tx_count_Bl}} </td>
                                 <td>{{ (i["timestamp"].split('T'))[0] }}</td>
-                                <td>{{ i["gas_used"]}} Mean 50 Blocks {{mean_gas_used_Bl}}</td>
-                                <td title="{{ i["gas_limit"]}}">{{ i["gas_limit"][:10] + '...'}}</td>
-                                <td>{{ i["tx_fees"]}} Mean 50 Blocks {{mean_tx_fees_Bl}}</td>
-                                <td><a href="/block/{{ i["height"]}}" class="card-footer-item"><img src="/static/link-solid.svg" alt=""></a></td>
+                                <td>{{ i["gas_used"]}} <br>Mean 50 Blocks {{mean_gas_used_Bl}}</td>
+                                <!-- <td title="{{ i["gas_limit"]}}">{{ i["gas_limit"][:10] + '...'}}</td> -->
+                                <td>{{ i["tx_fees"]}} <br> Mean 50 Blocks {{mean_tx_fees_Bl}}</td>
+                                
                                 
                             </tr>
                             {% endfor %}
@@ -112,16 +113,17 @@
                                 <th>Hash</th>
                                 <th>Fee</th>
                                 <th>Block</th>
-                                <th>Method</th>
+                                <!--<th>Method</th> -->
                                 <th>To</th>
                                 <th>From</th>
-                                <th>Tx burnt fee</th>
+                                <!-- <th>Tx burnt fee</th>-->
                                 <th>Timestamp</th>
-                                <th>Tx types</th>
-                                <th>Gas limit</th>
+                                <!--<th>Tx types</th>-->
+                                <!--<th>Gas limit</th>-->
                                 <th>Gas used</th>
-                                <th>Priority fee</th>
-                                <th>Created contract</th>
+                                <!--<th>Priority fee</th>-->
+                                <!--<th>Created contract</th>-->
+                                <th>link</th>
                             </tr>
                         </thead>
                         
@@ -132,16 +134,16 @@
                                 <th title="{{ i["hash"] }}">{{ i["hash"][:10] + '...' }}</th>
                                 <td>{{ i["fee"]}} Mean of 50 {{mean_fee_tx}}</td>
                                 <td>{{ i["block"] }}</td>
-                                <td>{{ i["method"] }}</td>
+                                <!-- <td>{{ i["method"] }}</td>-->
                                 <td title="{{ i["to"] }}">{{ i["to"][:10] + '...' }}</td>
                                 <td title="{{ i["from"]}}">{{ i["from"][:10] + '...'}}</td>
-                                <td>{{ i["tx_burnt_fee"] if i["tx_burnt_fee"] else '---'  }}</td>
+                                <!--<td>{{ i["tx_burnt_fee"] if i["tx_burnt_fee"] else '---'  }}</td>-->
                                 <td>{{ (i["timestamp"].split('T'))[0] }}</td>
-                                <td>{{ i["tx_types"] }}</td>
-                                <td>{{ i["gas_limit"]}}</td>
+                                <!--<td>{{ i["tx_types"] }}</td>-->
+                                <!--<td>{{ i["gas_limit"]}}</td>-->
                                 <td>{{ i["gas_used"]}} Mean of 50 {{mean_gas_used_tx}}</td>
-                                <td>{{ i["priority_fee"]}}</td>
-                                <td>{{ i["created_contract"]}}</td>
+                                <!--<td>{{ i["priority_fee"]}}</td>-->
+                                <!--<td>{{ i["created_contract"]}}</td>-->
                                 <td><a href="/tx/{{ i["hash"]}}" class="card-footer-item"><img src="/static/link-solid.svg" alt=""></a></td>
                                 
                             </tr>
