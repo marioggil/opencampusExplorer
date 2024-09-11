@@ -76,3 +76,32 @@ span {
     margin: 5%;
     text-align: center;
 }
+
+.footer {
+    background-color: #7a7a7a; /* Fondo gris */
+    color: white;
+    }
+.navbar-brand {
+    background-color: #7a7a7a; /* Fondo gris */
+    color: white;
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 7px;
+    margin-top: 1rem;
+    }
+.navbar a, .footer a {
+    color: white;
+}
+.navbar a:hover {
+    color: #666f88;
+    background: #8c8c8c;
+    border-radius: 8px;
+}
+.navbar.is-centered {
+    justify-content: center;
+}
+.footer {
+    padding: 4rem 0;
+    }

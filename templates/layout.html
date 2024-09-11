@@ -23,10 +23,25 @@
 </head>
 <body>
 
+    <header class="navbar is-centered">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="/">Home</a>
+            <a class="navbar-item" href="#">Sale</a>
+        </div>
+    </header>
+
     <main class="is-fullwidth main-div">
         {% block content %}
         {% endblock %}
     </main>
+
+    <footer class="footer is-centered">
+        <div class="content has-text-centered">
+            <p>&copy; 2024 - Powered by FastAPI</p>
+            <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+        </div>
+    </footer>
+
     
     {% block scripts %}
     <!-- Scripts específicos de cada página irán aquí -->

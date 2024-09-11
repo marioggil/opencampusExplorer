@@ -571,7 +571,7 @@ def TxDetail(hash):
     return data
 
 @app.get("/Tx", response_class=HTMLResponse)
-def Txhtml(request: Request):
+def Txhtml(request: Request,wallet: str = None):
     """
     Renders a page with metrics of Transactions.
 
@@ -584,7 +584,7 @@ def Txhtml(request: Request):
     hash="0xfa649ccc6d1308b4e620773bd5db94d45c5b35a47162789f81f6c0794ceae923"
     Tx=TxDetail(hash)
     print(Tx)
-    return templates.TemplateResponse("index.html", {"request": request,"Tx":Tx})
+    return templates.TemplateResponse("index.html", {"request": request,"Tx":Tx,"wallet":wallet})
 
 #New block
 
