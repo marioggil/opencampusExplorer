@@ -42,7 +42,8 @@
                     hx-trigger="load"
                     hx-target=".result"
                     hx-include="[name='IDwallet']"
-                {% endif %}></div>
+                {% endif %}>
+            </div>
         </div>
 
         <div id="wallet-db-container" class="wallet_db" hx-get="get_wallets" hx-trigger="load, refreshWallets from:body" hx-swap="innerHTML"></div>

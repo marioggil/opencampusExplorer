@@ -85,7 +85,7 @@
                                 <!--<td>{{ i["difficulty"]}}</td> -->
                                 <td title="{{ i["burnt_fees"]}}">{{ i["burnt_fees"][:10] + '...'}}</td>
                                 <td>{{ i["tx_count"]}} <br> <span>Mean 50 Blocks {{mean_tx_count_Bl}}</span> </td>
-                                <td>{{ (i["timestamp"].split('T'))[0] }}</td>
+                                <td>{{ (i["timestamp"].split('T'))[0] }}<br> <span>{{ (i["timestamp"].split('T'))[1] }}</span> </td>
                                 <td>{{ i["gas_used"]}} <br> <span>Mean 50 Blocks {{mean_gas_used_Bl}}</span></td>
                                 <!-- <td title="{{ i["gas_limit"]}}">{{ i["gas_limit"][:10] + '...'}}</td> -->
                                 <td>{{ i["tx_fees"]}} <br> <span>Mean 50 Blocks {{mean_tx_fees_Bl}}</span></td>
@@ -129,14 +129,14 @@
                         <tbody>
                             {% for i in TxtoIndex %}
                             <tr>
-                                <th><a href="/Tx/?wallet={{ i["hash"]}}" title="{{ i["hash"] }}" class="card-footer-item">{{ i["hash"][:10] + '...' }}&nbsp; <img src="/static/link-solid.svg" alt=""></a> </th>
+                                <th><a href="/Tx/{{ i["hash"]}}" title="{{ i["hash"] }}" class="card-footer-item">{{ i["hash"][:10] + '...' }}&nbsp; <img src="/static/link-solid.svg" alt=""></a> </th>
                                 <td>{{ i["fee"]}} <br> <span>Mean of 50 {{mean_fee_tx}}</span></td>
                                 <td>{{ i["block"] }}</td>
                                 <!-- <td>{{ i["method"] }}</td>-->
                                 <td title="{{ i["to"] }}">{{ i["to"][:10] + '...' }}</td>
                                 <td title="{{ i["from"]}}">{{ i["from"][:10] + '...'}}</td>
                                 <!--<td>{{ i["tx_burnt_fee"] if i["tx_burnt_fee"] else '---'  }}</td>-->
-                                <td>{{ (i["timestamp"].split('T'))[0] }}</td>
+                                <td>{{ (i["timestamp"].split('T'))[0] }} <br> <span>{{(i["timestamp"].split('T'))[1]}}</span></td>
                                 <!--<td>{{ i["tx_types"] }}</td>-->
                                 <!--<td>{{ i["gas_limit"]}}</td>-->
                                 <td>{{ i["gas_used"]}} <br> <span>Mean of 50 {{mean_gas_used_tx}}</span></td>
