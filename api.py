@@ -366,7 +366,7 @@ def search_data(IDwallet: str) -> Tuple[List[Dict[str, Dict]], List[Tuple[str, i
     return Resultado, get_wallet_actions(ranking_to), get_wallet_actions(ranking_from)
 
 @app.get("/wallet", response_class=HTMLResponse)
-def read_items(request: Request, IDwallet: str = None):
+def read_items(request: Request, IDwallet: str):
     """
     Handles the request to retrieve and display wallet data.
 
@@ -377,40 +377,48 @@ def read_items(request: Request, IDwallet: str = None):
     Returns:
         HTMLResponse: Renders the 'wallet.html' template with the provided data.
     """
-    Resultado, ranking_to, ranking_from = search_data(IDwallet)
+    if not isContract(IDwallet):
     
-    if Resultado:
-        Resultado = json.dumps(Resultado)
-    else:
-        Aw, Bw = TxAllWallets(IDwallet)
-        Resultado = makeData(Aw, Bw)
-        wallet = db.wallets.insert(wallet_id=IDwallet)
-        db.commit()
-        for i in Resultado:
-            db.datas.insert(
-                wallet=wallet,
-                uuid=i['id'],
-                url=i.get('url'),
-                color=i.get('color'),
-                source=i.get('source'),
-                target=i.get('target'),
-                width=i.get('width')
-            )
-        db.commit()
         Resultado, ranking_to, ranking_from = search_data(IDwallet)
-        Resultado = json.dumps(Resultado)
+        
+        if Resultado:
+            Resultado = json.dumps(Resultado)
+        else:
+            Aw, Bw = TxAllWallets(IDwallet)
+            Resultado = makeData(Aw, Bw)
+            wallet = db.wallets.insert(wallet_id=IDwallet)
+            db.commit()
+            for i in Resultado:
+                db.datas.insert(
+                    wallet=wallet,
+                    uuid=i['id'],
+                    url=i.get('url'),
+                    color=i.get('color'),
+                    source=i.get('source'),
+                    target=i.get('target'),
+                    width=i.get('width')
+                )
+            db.commit()
+            Resultado, ranking_to, ranking_from = search_data(IDwallet)
+            Resultado = json.dumps(Resultado)
 
-    return templates.TemplateResponse(
-        "wallet.html",
-        {
-            "request": request,
-            "IDwallet": IDwallet,
-            "Resultado": Resultado,
-            "ranking_to": ranking_to,
-            "ranking_from": ranking_from,
-            "enumerate": enumerate
-        }
-    )
+        return templates.TemplateResponse(
+            "wallet.html",
+            {
+                "request": request,
+                "IDwallet": IDwallet,
+                "Resultado": Resultado,
+                "ranking_to": ranking_to,
+                "ranking_from": ranking_from,
+                "enumerate": enumerate
+            }
+        )
+    else:
+        #bla bla bla
+        print('es contrato')
+        data,DetailContract=contractsDetail(IDwallet)
+        print(data,DetailContract)
+        return templates.TemplateResponse("contract.html", {"request": request,"data":data,"DetailContract":DetailContract})
     
 @app.get("/wallets", response_class=HTMLResponse)
 def index(request: Request, wallet: str = None):
@@ -424,6 +432,7 @@ def index(request: Request, wallet: str = None):
     Returns:
         HTMLResponse: Renders the 'index.html' template.
     """
+            
     return templates.TemplateResponse("index.html", {"request": request, "wallet": wallet})
 
 @app.get("/get_wallets", response_class=HTMLResponse)
@@ -555,6 +564,7 @@ def index2(request: Request):
 def TxDetail(hash):
     response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/transactions/%s"%(hash)).content)
     item=response
+    print(hash)
     data=  {'timestamp':item['timestamp'],
         "fee":int(item["fee"]["value"]),
         'block':item["block"],
@@ -568,10 +578,11 @@ def TxDetail(hash):
         'gas_used':int(item['gas_used']),
         'created_contract':item['created_contract'],
         }
+    
     return data
 
-@app.get("/Tx", response_class=HTMLResponse)
-def Txhtml(request: Request,wallet: str = None):
+@app.get("/Tx/{hash}", response_class=HTMLResponse)
+def Txhtml(request: Request,hash: str):
     """
     Renders a page with metrics of Transactions.
 
@@ -581,10 +592,10 @@ def Txhtml(request: Request,wallet: str = None):
     Returns:
         HTMLResponse: Renders the 'index.html' template with metrics.
     """
-    hash="0xfa649ccc6d1308b4e620773bd5db94d45c5b35a47162789f81f6c0794ceae923"
+    
     Tx=TxDetail(hash)
     print(Tx)
-    return templates.TemplateResponse("index.html", {"request": request,"Tx":Tx,"wallet":wallet})
+    return templates.TemplateResponse("tx.html", {"request": request,"Tx":Tx})
 
 #New block
 
@@ -608,8 +619,8 @@ def BlockDetail(block):
         }  
     return data
 
-@app.get("/block", response_class=HTMLResponse)
-def Blockhtml(request: Request):
+@app.get("/block/{number}", response_class=HTMLResponse)
+def Blockhtml(request: Request, number:str):
     """
     Renders a page with metrics of blocks.
 
@@ -619,10 +630,10 @@ def Blockhtml(request: Request):
     Returns:
         HTMLResponse: Renders the 'index.html' template with metrics .
     """
-    hash=3566
+    hash=number
     Block=BlockDetail(hash)
     print(Block)
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse("block.html", {"request": request,"Block":Block})
 
 # New contract
 
