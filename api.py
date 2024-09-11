@@ -505,12 +505,20 @@ def metricsTx():
 def TxIndex(items):
     list_data=[]
     for item in items["items"]:
+        try:
+            Tto=item["to"]["hash"]
+        except:
+            Tto=""
+        try:
+            Tfrom=item["from"]["hash"]
+        except:
+            Tfrom=""
         data=  {'timestamp':item['timestamp'],
         "fee":int(item["fee"]["value"]),
         'block':item["block"],
         'method':item["method"],
-        "to":item["to"]["hash"],
-        "from":item["from"]["hash"],
+        "to":Tto,
+        "from":Tfrom,
         'tx_burnt_fee':item['tx_burnt_fee'],
         "hash":item["hash"],
         'priority_fee':item['priority_fee'],
