@@ -133,8 +133,11 @@
                                 <td>{{ i["fee"]}} <br> <span>Mean of 50 {{mean_fee_tx}}</span></td>
                                 <td>{{ i["block"] }}</td>
                                 <!-- <td>{{ i["method"] }}</td>-->
-                                <td title="{{ i["to"] }}">{{ i["to"][:10] + '...' }}</td>
-                                <td title="{{ i["from"]}}">{{ i["from"][:10] + '...'}}</td>
+                                <!-- <td title="{{ i["to"] }}">{{ i["to"][:10] + '...' }}</td> -->
+                                <td><a href="/wallets?wallet={{ i["to"]}}" title="{{ i["to"] }}" class="card-footer-item">{{ i["to"][:10] + '...' }}&nbsp; <img src="/static/link-solid.svg" alt=""></a></td>
+                                <td><a href="/wallets?wallet={{ i["from"]}}" title="{{ i["from"] }}" class="card-footer-item">{{ i["from"][:10] + '...' }}&nbsp; <img src="/static/link-solid.svg" alt=""></a></td>
+                                <!--  <td title="{{ i["from"]}}">{{ i["from"][:10] + '...'}}</td>  -->
+                                <!-- http://127.0.0.1:7990/wallets?wallet=0x4A8b4a6a5a298ade31831121a68B8f5c975d4450 -->
                                 <!--<td>{{ i["tx_burnt_fee"] if i["tx_burnt_fee"] else '---'  }}</td>-->
                                 <td>{{ (i["timestamp"].split('T'))[0] }} <br> <span>{{(i["timestamp"].split('T'))[1]}}</span></td>
                                 <!--<td>{{ i["tx_types"] }}</td>-->
