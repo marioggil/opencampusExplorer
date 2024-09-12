@@ -1,1 +1,62 @@
-{{ Tx }}
+
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h1 class="">Transactions: {{ Tx ["hash"]}}</h1>
+
+<section class="section">
+    <div class="container">
+        <div class="columns is-multiline">
+            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                <div class="box">
+                    <p class="">Block</p>
+                    <a href="/block/{{ Tx ["block"]}}" title="{{ Tx ["block"]}}" class="card-footer-item">{{ Tx ["block"]}} &nbsp; <img src="/static/link-solid.svg" alt=""></a>
+                </div>
+            </div>
+
+
+            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                <div class="box">
+                    <p class="">fee</p>
+                    <p class="">{{ Tx ["fee"]}}</p>
+                </div>
+            </div>
+            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                <div class="box">
+                    <p class="">Method</p>
+                    <p class="">{{ Tx ["method"]}}</p>
+                </div>
+            </div>
+
+            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                <div class="box">
+                    <p class="">From</p>
+                    <a href="/wallets?wallet={{ Tx["from"]}}" title="{{ Tx["from"] }}" class="card-footer-item">{{ Tx["from"][:10] + '...' }}&nbsp; <img src="/static/link-solid.svg" alt=""></a>
+                </div>
+            </div>
+            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                <div class="box">
+                    <p class="">To</p>
+                    <a href="/wallets?wallet={{ Tx["to"]}}" title="{{ Tx["to"] }}" class="card-footer-item">{{ Tx["to"][:10] + '...' }}&nbsp; <img src="/static/link-solid.svg" alt=""></a>
+                </div>
+            </div>
+            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                <div class="box">
+                    <p class="">Transactions types</p>
+                    <p class="">{{ Tx ["tx_types"]}}</p>
+                </div>
+            </div>
+            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                <div class="box">
+                    <p class="">Timestamp</p>
+                    <p class=""> {{ (Tx ["timestamp"].split('T'))[0] }}<br> <span>{{ (Tx ["timestamp"].split('T'))[1] }}</p>
+                </div>
+            </div>
+            
+
+        </div>
+    </div>
+</div>
+</section>     
+{% endblock %}
