@@ -1,1 +1,62 @@
-testing
+
+{{DetailContract}}
+
+<h1 class="">Contract</h1>
+
+<section class="section">
+    <div class="container">
+        <div class="columns is-multiline">
+
+            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                <div class="box">
+                    <p class="">Name</p>
+                    <p class="">{{ data ["name"]}}</p>
+                </div>
+            </div>
+
+            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                <div class="box">
+                    <p class="">Vyper contract</p>
+                    <p class="">{{ data ["is_vyper_contract"]}}</p>
+                </div>
+            </div>
+
+            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                <div class="box">
+                    <p class="">Language</p>
+                    <p class="">{{ data ["language"]}}</p>
+                </div>
+            </div>
+   
+
+            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                <div class="box">
+                    <p class="">Fully verified</p>
+                    <p class="">{{ data ["is_fully_verified"]}}</p>
+                </div>
+            </div>
+            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                <div class="box">
+                    <p class="">Blueprint</p>
+                    <p class="">{{ data ["is_blueprint"]}}</p>
+                </div>
+            </div>
+
+            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                <div class="box">
+                    <p class="">Verified</p>
+                    <p class="">{{ data ["is_verified"]}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</section> 
+{% for i in DetailContract.keys() %}
+<p> 
+{{i}}
+</p>
+<p> 
+{{" ".join(DetailContract[i])}}
+</p> 
+{% endfor %}
