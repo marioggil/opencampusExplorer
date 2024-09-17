@@ -105,3 +105,14 @@ span {
 .footer {
     padding: 4rem 0;
     }
+
+.box-title {
+    font-weight: 700;
+}
+
+.box-index {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
