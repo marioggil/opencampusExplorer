@@ -8,7 +8,75 @@
     }
 </script>
 
-<h1 class="title is-6">Wallets available</h1>
-{% for wallet in wallets %}
-<a href="#" onclick="fillInputAndSubmit('{{ wallet.wallet_id }}'); return false;">{{ wallet.wallet_id }}</a>
-{% endfor %}
+<script>
+    document.addEventListener('htmx:afterSettle', (event) => {
+    if (event.target.id === 'wallet-db-container') {
+        function dropdown() {
+            const dropdownButton = document.querySelector('#dropdown-button');
+            const dropdownMenu = document.getElementById('dropdown-menu');
+
+            dropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                dropdownMenu.classList.toggle('activo'); // Usamos 'activo' en lugar de 'oculto'
+            });
+
+            // Cerrar el dropdown si se hace clic fuera de él
+            document.addEventListener('click', (event) => {
+                if (!dropdownButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                    dropdownMenu.classList.remove('activo');
+                }
+            });
+        }
+        dropdown();
+    }
+});
+
+</script>
+
+<style>
+    .custom-dropdown-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-in-out;
+    }
+
+    .custom-dropdown-content.activo {
+        max-height: 500px; /* Ajusta este valor según el contenido del dropdown */
+    }
+
+</style>
+
+<div class="box">
+    <div class="custom-dropdown">
+        <button class="button is-fullwidth" aria-haspopup="true" aria-controls="dropdown-menu" id="dropdown-button">
+            <span>Wallets available on DB</span>
+            <span class="icon is-small">
+                <i class="fas fa-angle-down" aria-hidden="true"></i>
+            </span>
+        </button>
+        <div class="custom-dropdown-content " id="dropdown-menu">
+            <div class="box">
+                <table class="table is-fullwidth is-striped is-hoverable">
+                    <thead>
+                        <tr>
+                            <th>Wallet ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for wallet in wallets %}
+                        <tr>
+                            <td>
+                                <a href="#" onclick="fillInputAndSubmit('{{ wallet.wallet_id }}'); return false;">
+                                    {{ wallet.wallet_id }}
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
