@@ -178,7 +178,6 @@ def TxAllWallets(wallet: str, maxloop: int = 1000) -> Tuple[List[Dict], List[Dic
 
     Out, newwallets, contract = TxsWallet(wallet)
     wallets.append({"id": wallet, "url": f"https://opencampus-codex.blockscout.com/address/{wallet}", "color": "#27ae60"})
-    print(wallets)
 
     counter = 0
     Tot = len(newwallets)
@@ -188,7 +187,7 @@ def TxAllWallets(wallet: str, maxloop: int = 1000) -> Tuple[List[Dict], List[Dic
         counter += 1
         if counter >= maxloop:
             break
-        print(f"{counter} of {Tot}")
+        #print(f"{counter} of {Tot}")
 
         Out2, temp, Contract = TxsWallet(aw)
 
@@ -249,7 +248,7 @@ def makeData(Aw: List[Dict], Bw: List[Dict]) -> List[Dict]:
             "width": TxT["width"]
         })
         
-        print(f"{counter} of {Tot}")
+        #print(f"{counter} of {Tot}")
         counter += 1
 
     Sal = Sal1 + Sal2
@@ -414,10 +413,7 @@ def read_items(request: Request, IDwallet: str):
             }
         )
     else:
-        #bla bla bla
-        print('es contrato')
         data,DetailContract=contractsDetail(IDwallet)
-        print(data,DetailContract)
         return templates.TemplateResponse("contract.html", {"request": request,"data":data,"DetailContract":DetailContract})
     
 @app.get("/wallets", response_class=HTMLResponse)
@@ -564,7 +560,6 @@ def index2(request: Request):
 def TxDetail(hash):
     response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/transactions/%s"%(hash)).content)
     item=response
-    print(hash)
     data=  {'timestamp':item['timestamp'],
         "fee":int(item["fee"]["value"]),
         'block':item["block"],
@@ -594,7 +589,6 @@ def Txhtml(request: Request,hash: str):
     """
     
     Tx=TxDetail(hash)
-    print(Tx)
     return templates.TemplateResponse("tx.html", {"request": request,"Tx":Tx})
 
 #New block
@@ -632,7 +626,6 @@ def Blockhtml(request: Request, number:str):
     """
     hash=number
     Block=BlockDetail(hash)
-    print(Block)
     return templates.TemplateResponse("block.html", {"request": request,"Block":Block})
 
 # New contract
@@ -674,5 +667,4 @@ def contracthtml(request: Request):
     """
     hash="0xbA21243Bfb918F9a047f94Ef11914Afd0cE16A4b"
     data,DetailContract=contractsDetail(hash)
-    print(data,DetailContract)
     return templates.TemplateResponse("index.html", {"request": request})

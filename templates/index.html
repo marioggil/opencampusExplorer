@@ -2,9 +2,8 @@
 
 {% block content %}
 
-<div class="columns">
-    <div class="column"></div>
-    <div class="column">
+<div class="columns is-centered">
+    <div class="column is-half">
         <div class="titulo">
             <h1 class="title">Explorer Educhain</h1>
         </div>
@@ -46,9 +45,8 @@
             </div>
         </div>
 
-        <div id="wallet-db-container" class="" hx-get="get_wallets" hx-trigger="load, refreshWallets from:body" hx-swap="innerHTML"></div>
-    </div>
-    <div class="column"></div>
+        <div id="wallet-db-container" class="wallet_db" hx-get="get_wallets" hx-trigger="load, refreshWallets from:body" hx-swap="innerHTML"></div>
+    </div>    
 </div>
 
 <script>
