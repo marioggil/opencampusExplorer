@@ -1,60 +1,102 @@
-
-<h1 class="">Contract</h1>
-
-<section class="section">
+<section class="">
     <div class="container">
+        <div class="columns is-centered">
+            <div class="column is-full-mobile is-half-tablet is-two-fifths-desktop">
+                <h1 class="title" style="text-align: center;">Contract</h1>
+            </div>
+        </div>
         <div class="columns is-multiline">
 
-            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
-                <div class="box">
-                    <p class="">Name</p>
-                    <p class="">{{ data ["name"]}}</p>
+            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">   
+                <div class="box box-index">
+                    <div>
+                        <p class="">Name</p>
+                        <p class="" title="{{ data ['name']}}">{{ data ["name"][:30] + '...'}}</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-server"></i>
+                    </div>
                 </div>
             </div>
 
             <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
-                <div class="box">
-                    <p class="">Vyper contract</p>
-                    <p class="">{{ data ["is_vyper_contract"]}}</p>
+                <div class="box box-index">
+                    <div>
+                        <p class="">Vyper contract</p>
+                        <p class="">{{ data ["is_vyper_contract"]}}</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-server"></i>
+                    </div>
                 </div>
             </div>
 
             <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
-                <div class="box">
-                    <p class="">Language</p>
-                    <p class="">{{ data ["language"]}}</p>
-                </div>
-            </div>
-   
-
-            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
-                <div class="box">
-                    <p class="">Fully verified</p>
-                    <p class="">{{ data ["is_fully_verified"]}}</p>
-                </div>
-            </div>
-            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
-                <div class="box">
-                    <p class="">Blueprint</p>
-                    <p class="">{{ data ["is_blueprint"]}}</p>
+                <div class="box box-index">
+                    <div>
+                        <p class="">Language</p>
+                        <p class="">{{ data ["language"]}}</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-server"></i>
+                    </div>
                 </div>
             </div>
 
             <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
-                <div class="box">
-                    <p class="">Verified</p>
-                    <p class="">{{ data ["is_verified"]}}</p>
+                <div class="box box-index">
+                    <div>
+                        <p class="">Fully verified</p>
+                        <p class="">{{ data ["is_fully_verified"]}}</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-server"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                <div class="box box-index">
+                    <div>
+                        <p class="">Blueprint</p>
+                        <p class="">{{ data ["is_blueprint"]}}</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-server"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                <div class="box box-index">
+                    <div>
+                        <p class="">Verified</p>
+                        <p class="">{{ data ["is_verified"]}}</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-server"></i>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 </section> 
-{% for i in DetailContract.keys() %}
-<p> 
-{{i}}
-</p>
-<p> 
-{{" ".join(DetailContract[i])}}
-</p> 
-{% endfor %}
+
+<div class="columns is-multiline">
+    {% for i in DetailContract.keys() %}
+        <div class="column is-6">
+            <div class="card">
+                <header class="card-header">
+                    <p class="card-header-title">
+                        {{ i }}
+                    </p>
+                </header>
+                <div class="card-content">
+                    <div class="content">
+                        {{ " ".join(DetailContract[i]) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
