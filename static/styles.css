@@ -1,5 +1,21 @@
 /* Set the size of the graph container */
 
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-div {
+    flex: 1; 
+}
+
+
 img {
     width: 1rem;
 }
