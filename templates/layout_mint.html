@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFT Raffle Interface</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.8.2/web3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+</head>
+<body>
+    
+    {% block content %}
+    {% endblock %}
+
+    <script>
+        const desiredChainId = '0xa045c'; // Educhain.
+        const contractAddress = '0xa508A0e546720F6A6C984EB891DDaA4cDF48afE5'; // Replace with actual contract address
+        const contractABI = [
+            // ... (ABI remains unchanged)
+        ];
+        
+        let web3;
+        let contract;
+        let userAddress;
+
+        const connectButton = document.getElementById('connectButton');
+        const statusElement = document.getElementById('status');
+        const buyButton = document.getElementById('buyButton');
+        const checkButton = document.getElementById('checkButton');
+        const resetButton = document.getElementById('resetButton');
+        const checkwinnerButton = document.getElementById('checkwinnerButton');
+
+        connectButton.onclick = connectWallet;
+
+        async function connectWallet() {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    web3 = new Web3(window.ethereum);
+                    const accounts = await web3.eth.getAccounts();
+                    userAddress = accounts[0];
+                    contract = new web3.eth.Contract(contractABI, contractAddress);
+                    
+                    statusElement.textContent = 'Wallet conectada. Verificando red...';
+                    statusElement.classList.add('is-info');
+                    await checkAndSwitchNetwork();
+                } catch (error) {
+                    console.error(error);
+                    statusElement.textContent = 'Error al conectar la wallet: ' + error.message;
+                    statusElement.classList.add('is-danger');
+                }
+            } else {
+                statusElement.textContent = 'Por favor, instala MetaMask!';
+                statusElement.classList.add('is-warning');
+            }
+        }
+
+        async function checkAndSwitchNetwork() {
+            const chainId = await web3.eth.getChainId();
+            if (chainId !== desiredChainId) {
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: desiredChainId }],
+                    });
+                    statusElement.textContent = 'Red cambiada exitosamente. Listo para interactuar.';
+                    statusElement.classList.remove('is-info', 'is-danger');
+                    statusElement.classList.add('is-success');
+                    enableButtons();
+                } catch (error) {
+                    console.error(error);
+                    statusElement.textContent = 'Error al cambiar de red: ' + error.message;
+                    statusElement.classList.remove('is-info', 'is-success');
+                    statusElement.classList.add('is-danger');
+                }
+            } else {
+                statusElement.textContent = 'Conectado a la red correcta. Listo para interactuar.';
+                statusElement.classList.remove('is-info', 'is-danger');
+                statusElement.classList.add('is-success');
+                enableButtons();
+            }
+        }
+
+        function enableButtons() {
+            buyButton.disabled = false;
+            checkButton.disabled = false;
+            resetButton.disabled = false;
+            checkwinnerButton.disabled = false;
+        }
+        
+        async function buyTicket() {
+            try {
+                const accounts = await web3.eth.getAccounts();
+                await contract.methods.buyTicket().send({
+                    from: accounts[0],
+                    value: web3.utils.toWei('0.01', 'ether') // Adjust this value based on your TICKET_PRICE
+                });
+                alert('Ticket purchased successfully!');
+            } catch (error) {
+                console.error('Error buying ticket:', error);
+                alert('Error buying ticket. Check console for details.');
+            }
+        }
+        
+        async function checkRaffleStatus() {
+            try {
+                const status = await contract.methods.getRaffleStatus().call();
+                statusElement.innerHTML = `
+                    <p><strong>Ended:</strong> ${status.ended}</p>
+                    <p><strong>Winner:</strong> ${status.winnerAddress}</p>
+                    <p><strong>Total Participants:</strong> ${status.totalParticipants}</p>
+                    <p><strong>Blocks Remaining:</strong> ${status.blocksRemaining}</p>
+                    <p><strong>Prize Pool:</strong> ${web3.utils.fromWei(status.prizePool, 'ether')} ETH</p>
+                `;
+                statusElement.classList.remove('is-danger', 'is-warning', 'is-info');
+                statusElement.classList.add('is-success');
+            } catch (error) {
+                console.error('Error checking status:', error);
+                statusElement.textContent = 'Error checking status. Check console for details.';
+                statusElement.classList.remove('is-success', 'is-warning', 'is-info');
+                statusElement.classList.add('is-danger');
+            }
+        }
+        
+        async function resetRaffle() {
+            try {
+                const accounts = await web3.eth.getAccounts();
+                await contract.methods.resetRaffle().send({from: accounts[0]});
+                alert('Raffle reset successfully!');
+            } catch (error) {
+                console.error('Error resetting raffle:', error);
+                alert('Error resetting raffle. Check console for details.');
+            }
+        }
+
+        async function checkwin() {
+            try {
+                const accounts = await web3.eth.getAccounts();
+                await contract.methods.checkAndSelectWinner().send({from: accounts[0]});
+                alert('Winner checked successfully!');
+            } catch (error) {
+                console.error('Error checking winner:', error);
+                alert('Error checking winner. Check console for details.');
+            }
+        }
+    </script>
+</body>
+</html>
