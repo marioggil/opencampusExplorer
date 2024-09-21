@@ -235,16 +235,19 @@ def root_section_4(request: Request):
     "n_contracts":"Total contracts",
     "n_contracts_is_vyper_contract":"Total contracts in vyper",
     "n_contracts_is_verified":"Total contracts verified",
-    "n_contracts_language":"Total languages in contracts",
-    "n_contracts_evm_version": "Total versions of evm  in contracts",
     "n_txs":"Total transactions",
     "n_txs_not_success": "Total transactions not success",
     "n_blocks":"Total blocks",
-    "n_blocks_tx_count": "Total transactions in blocks",
-    "n_blocks_miner": "Total blocks mine in wallets"
+
 
 
     }
+
+    to_hist={"n_contracts_language":"Total languages in contracts",
+    "n_contracts_evm_version": "Total versions of evm  in contracts",
+    "n_blocks_tx_count": "Total transactions in blocks",
+    "n_blocks_miner": "Total blocks mine in wallets"}
+
     data=[]
     sequences = db(db.stadists_site).select().last()
     for column in sequences.keys():
@@ -256,6 +259,57 @@ def root_section_4(request: Request):
         
 
     return templates.TemplateResponse("root_section_4.html", 
+                                        {
+                                            "request": request,
+                                            "content":data ,
+                                            "to_hist": to_hist,
+                                            "enumerate": enumerate,
+                                            "recaptcha_site_key":recaptcha_site_key
+                                            })
+
+def list_to_hist(data,limit=0):
+    sal=[]
+    for d in data.keys():
+        if limit==0:
+            sal.append({ "range": d, "frequency": data[d] })
+        else:
+            sal.append({ "range": d[limit:], "frequency": data[d] })
+
+    return sal
+
+
+
+
+@app.get("/root_section_4_hist", response_class=HTMLResponse)
+def root_section_4_hist(request: Request):
+    """
+    Renders a page with all  metrics of Educhain.
+
+    Args:
+        request (Request): The request object.
+
+    Returns:
+        HTMLResponse: Renders the 'indexV2.html' template with metrics.
+    """
+
+
+    to_hist={"n_contracts_language":"Total languages in contracts",
+    "n_contracts_evm_version": "Total versions of evm  in contracts",
+    "n_blocks_tx_count": "Total transactions in blocks",
+    "n_blocks_miner": "Total blocks mine in wallets"}
+
+    data=[]
+    sequences = db(db.stadists_site).select().last()
+    for column in sequences.keys():
+        if column in to_hist.keys():
+            if column=="n_blocks_miner":
+                data.append([to_hist[column],list_to_hist(json.loads(sequences[column]),-6)])
+            else:
+                data.append([to_hist[column],list_to_hist(json.loads(sequences[column]))])
+    
+        
+
+    return templates.TemplateResponse("root_section_4_hist.html", 
                                         {
                                             "request": request,
                                             "content":data ,

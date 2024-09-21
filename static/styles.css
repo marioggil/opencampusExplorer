@@ -203,3 +203,41 @@ span {
     display: none;
     pointer-events: none;
   }
+
+
+.histogram-container {
+    max-width: 800px;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
+}
+.chart {
+    height: 300px;
+    padding: 20px;
+    display: flex;
+    gap: 2px;
+    align-items: flex-end;
+}
+.bar {
+    background-color: #b2babb;
+    width: 50px;
+    transition: height 0.5s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    border-radius: 4px 4px 0 0;
+    position: relative;
+}
+.bar .value {
+    position: absolute;
+    top: -25px;
+    color: black;
+}
+.bar .label {
+    position: absolute;
+    bottom: -25px;
+    color: black;
+    width: 100%;
+    text-align: center;
+    transform: rotate(45deg);
+}

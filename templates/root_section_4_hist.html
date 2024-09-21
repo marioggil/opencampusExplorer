@@ -1,0 +1,70 @@
+<section class="section">
+    <div class="container">
+        <div class="columns is-multiline">
+
+            <div class="histogram-container">
+                <h2>{{content[0][0]}}</h2>
+                <div class="chart" id="histogram"></div>
+            </div>
+
+            <div class="histogram-container">
+                <h2>{{content[1][0]}}</h2>
+                <div class="chart" id="histogram2"></div>
+            </div>
+
+
+            <div class="histogram-container">
+                <h2>{{content[2][0]}}</h2>
+                <div class="chart" id="histogram3"></div>
+            </div>
+
+            <div class="histogram-container">
+                <h2>{{content[3][0]}}</h2>
+                <div class="chart" id="histogram4"></div>
+            </div>
+            
+    </div>
+</div>
+</div>
+</section>
+<script>
+    const data = {{content[0][1]|safe}};
+    const data2 = {{content[1][1]|safe}};
+    const data3 = {{content[2][1]|safe}};
+    const data4 = {{content[3][1]|safe}};
+
+
+
+    function createHistogram(data,contt) {
+        const container = document.getElementById(contt);
+        const maxFrequency = Math.max(...data.map(d => d.frequency));
+        
+        data.forEach(item => {
+            const bar = document.createElement('div');
+            bar.className = 'bar';
+            const height = (item.frequency / maxFrequency) * 260;  // Un poco menos que la altura del contenedor
+            bar.style.height = `${height}px`;
+            
+            // Valor numérico arriba de la barra
+            const value = document.createElement('div');
+            value.className = 'value';
+            value.textContent = item.frequency;
+            
+            // Etiqueta debajo de la barra
+            const label = document.createElement('div');
+            label.className = 'label';
+            label.textContent = item.range;
+            
+            bar.appendChild(value);
+            bar.appendChild(label);
+            container.appendChild(bar);
+        });
+    }
+
+    createHistogram(data,'histogram');
+    createHistogram(data2,'histogram2');
+
+    createHistogram(data3,'histogram3');
+    createHistogram(data4,'histogram4');
+</script>
+
