@@ -748,3 +748,49 @@ def nfthtml(request: Request):
     # convert into JSON:
     y = json.dumps(x)
     return y
+
+
+def TxsMyContract() -> Tuple[List[Dict]]:
+    """
+    Retrieves and processes transactions associated with my contract.
+
+    Args:
+       
+
+    Returns:
+        Tuple[List[Dict], Set[str]]: 
+            - A list of processed transaction details.
+    """
+    wallet="0xa508A0e546720F6A6C984EB891DDaA4cDF48afE5"
+    Out = []
+
+    # Fetch transactions where the wallet is the recipient (to)
+    towallet = requests.get(f'https://opencampus-codex.blockscout.com/api/v2/addresses/{wallet}/transactions?filter=to')
+    Out, walletsto = AllTx(towallet.content, Out)
+
+    # Fetch transactions where the wallet is the sender (from)
+    fromwallet = requests.get(f'https://opencampus-codex.blockscout.com/api/v2/addresses/{wallet}/transactions?filter=from')
+    Out, walletsfrom = AllTx(fromwallet.content, Out)
+    Resultado=[]
+    doit=set()
+    for i in Out:
+        for j in [i['from_wallet'],i['to_wallet']]:
+            data = {}
+
+            if j not in doit:
+                if j ==wallet:
+                    color='#FF5733'
+                else:
+                    color='#000000'
+                data = {'data': {'id': i['from_wallet'], 'color': color}}
+                Resultado.append(data)
+            
+            data = {'data': {'id': i["id"], 'source': i['from_wallet'], 'target': i['to_wallet'], 'width': i["width"]}}
+            Resultado.append(data)
+
+    # Combine wallets from both transactions
+    #all_wallets = walletsto.union(walletsfrom)
+    #, all_wallets
+
+
+    return Resultado

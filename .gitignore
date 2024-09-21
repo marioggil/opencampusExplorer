@@ -4,3 +4,4 @@ databases
 !/private/*configExample*
 !/private/modelcontract.py
 !/private/appconfig.ini.example
+.vscode/settings.json
