@@ -105,7 +105,7 @@ span {
 .navbar a, .footer a {
     color: white;
 }
-.navbar a:hover {
+.navbar a:hover, .navbar a:active, .navbar a:focus, .navbar a:focus-within {
     color: #666f88;
     background: #8c8c8c;
     border-radius: 8px;

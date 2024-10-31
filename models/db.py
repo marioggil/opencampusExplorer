@@ -1,18 +1,7 @@
 from pydal import DAL, Field
+from config.parameters import db
+import datetime
 
-import os, datetime
-
-pwd = os.getcwd()
-try:
-    os.stat(pwd + '/databases')
-except:
-    os.mkdir(pwd + '/databases')
-    
-db = DAL("sqlite://storage.sqlite",
-            pool_size=10,
-            migrate_enabled=True,
-            folder="databases"
-        )
 
 db.define_table('wallets',
                 Field('wallet_id'),

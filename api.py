@@ -1,8 +1,8 @@
-import fastapi
+# -*- coding: utf-8 -*-
+
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse,JSONResponse
 from pydantic import BaseModel
-import time
 from fastapi.staticfiles import StaticFiles
 from fastapi import Query, File, UploadFile,HTTPException
 from starlette.middleware.cors import CORSMiddleware
@@ -13,7 +13,7 @@ from fastapi.staticfiles import StaticFiles
 from typing import List, Set, Tuple, Dict
 from models.db import db
 import private.modelcontract as LLMC
-import os
+from config.parameters import recaptcha_site_key, recaptcha_secret_key
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -410,7 +410,8 @@ def read_items(request: Request, IDwallet: str):
                 "Resultado": Resultado,
                 "ranking_to": ranking_to,
                 "ranking_from": ranking_from,
-                "enumerate": enumerate
+                "enumerate": enumerate,
+                "recaptcha_site_key":recaptcha_site_key
             }
         )
     else:
@@ -433,7 +434,7 @@ def index(request: Request, wallet: str = None):
         HTMLResponse: Renders the 'index.html' template.
     """
             
-    return templates.TemplateResponse("index.html", {"request": request, "wallet": wallet})
+    return templates.TemplateResponse("index.html", {"request": request, "wallet": wallet,"recaptcha_site_key":recaptcha_site_key})
 
 @app.get("/get_wallets", response_class=HTMLResponse)
 def get_wallets(request: Request):
@@ -447,7 +448,7 @@ def get_wallets(request: Request):
         HTMLResponse: Renders the 'wallets_db.html' template with the list of wallets.
     """
     wallets = db(db.wallets).select()
-    return templates.TemplateResponse("wallets_db.html", {"request": request, "wallets": wallets})
+    return templates.TemplateResponse("wallets_db.html", {"request": request, "wallets": wallets,"recaptcha_site_key":recaptcha_site_key})
 
 ### New index
 def metricsBlocks():
@@ -559,7 +560,21 @@ def index2(request: Request):
     TxtoIndex=metricsTx()
         
 
-    return templates.TemplateResponse("indexV2.html", {"request": request,"Data_general":Data_general,"BlocksToIndex":BlocksToIndex["items"],"TxtoIndex":TxtoIndex["items"],"mean_fee_tx":TxtoIndex["mean_fee"],"mean_gas_used_tx":TxtoIndex["mean_gas_used"],"mean_size_Bl":BlocksToIndex["mean_size"],"mean_tx_count_Bl":BlocksToIndex["mean_tx_count"],"mean_tx_fees_Bl":BlocksToIndex["mean_tx_fees"],"mean_gas_used_Bl":BlocksToIndex["mean_gas_used"],"enumerate": enumerate})
+    return templates.TemplateResponse("indexV2.html", 
+                                        {
+                                            "request": request,
+                                            "Data_general":Data_general,
+                                            "BlocksToIndex":BlocksToIndex["items"],
+                                            "TxtoIndex":TxtoIndex["items"],
+                                            "mean_fee_tx":TxtoIndex["mean_fee"],
+                                            "mean_gas_used_tx":TxtoIndex["mean_gas_used"],
+                                            "mean_size_Bl":BlocksToIndex["mean_size"],
+                                            "mean_tx_count_Bl":BlocksToIndex["mean_tx_count"],
+                                            "mean_tx_fees_Bl":BlocksToIndex["mean_tx_fees"],
+                                            "mean_gas_used_Bl":BlocksToIndex["mean_gas_used"],
+                                            "enumerate": enumerate,
+                                            "recaptcha_site_key":recaptcha_site_key
+                                            })
 
 def TxDetail(hash):
     response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/transactions/%s"%(hash)).content)
@@ -595,7 +610,7 @@ def Txhtml(request: Request,hash: str):
     
     Tx=TxDetail(hash)
     print(Tx)
-    return templates.TemplateResponse("tx.html", {"request": request,"Tx":Tx})
+    return templates.TemplateResponse("tx.html", {"request": request,"Tx":Tx,"recaptcha_site_key":recaptcha_site_key})
 
 #New block
 
@@ -633,7 +648,7 @@ def Blockhtml(request: Request, number:str):
     hash=number
     Block=BlockDetail(hash)
     print(Block)
-    return templates.TemplateResponse("block.html", {"request": request,"Block":Block})
+    return templates.TemplateResponse("block.html", {"request": request,"Block":Block,"recaptcha_site_key":recaptcha_site_key})
 
 # New contract
 
@@ -675,7 +690,7 @@ def contracthtml(request: Request):
     hash="0xbA21243Bfb918F9a047f94Ef11914Afd0cE16A4b"
     data,DetailContract=contractsDetail(hash)
     print(data,DetailContract)
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse("index.html", {"request": request,"recaptcha_site_key":recaptcha_site_key})
 
 @app.get("/mint", response_class=HTMLResponse)
 def minthtml(request: Request):
@@ -688,7 +703,7 @@ def minthtml(request: Request):
     Returns:
         HTMLResponse: Renders the 'mint.html' template with metrics.
     """
-    return templates.TemplateResponse("mint.html", {"request": request})
+    return templates.TemplateResponse("mint.html", {"request": request,"recaptcha_site_key":recaptcha_site_key})
 
 # @app.get("/test", response_class=HTMLResponse)
 # def minthtml(request: Request):
