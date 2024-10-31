@@ -1,3 +1,6 @@
 __pycache__
 databases
-private/experiment_config.json
+/private/*
+!/private/*configExample*
+!/private/modelcontract.py
+!/private/appconfig.ini.example

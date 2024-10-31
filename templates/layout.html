@@ -17,6 +17,20 @@
 
     <script src="https://unpkg.com/htmx.org@2.0.2"></script>
 
+    <!-- RECAPTCHA -->
+    <script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha_site_key }}"></script>
+    <script>
+        // Intercepta todas las solicitudes AJAX
+        $(document).ajaxSend(function(e, xhr, settings) {
+            grecaptcha.ready(function() {
+                grecaptcha.execute('{{ recaptcha_site_key }}', {action: 'submit'})
+                .then(function(token) {
+                    xhr.setRequestHeader('X-ReCaptcha-Token', token);
+                });
+            });
+        });
+    </script>
+
     {% block head %}
     {% endblock %}
 
@@ -28,6 +42,11 @@
             <a class="navbar-item" href="/">Home</a>
             <a class="navbar-item" href="/wallets">Wallets</a>
             <a class="navbar-item" href="/mint" target="_blank">Lottery</a>
+            <a class="navbar-item" href="#">
+                <button id='toggle'>
+                    <i class="fas fa-sun"></i>
+                </button>
+            </a>
         </div>
     </header>
 
@@ -43,6 +62,16 @@
         </div>
     </footer>
 
+    <script>
+        const html = document.querySelector('html');
+        const toggle = document.getElementById('toggle');
+        const icon = toggle.querySelector('i');
+    
+        toggle.addEventListener("click", () => {
+            const isDarkTheme = html.classList.toggle('theme-dark');
+            icon.className = isDarkTheme ? 'fas fa-moon' : 'fas fa-sun';
+        });
+    </script>
     
     {% block scripts %}
     <!-- Scripts específicos de cada página irán aquí -->

@@ -1,0 +1,9 @@
+[db]
+uri       = sqlite://storage.sqlite
+migrate   = true
+pool_size = 10
+folder    = databases  
+
+[recaptcha]
+site_key = 1
+secret_key = 1
