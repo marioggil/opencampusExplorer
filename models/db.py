@@ -4,7 +4,6 @@ import datetime
 
 
 
-
 # db.define_table('datas',
 #                 Field('wallet','reference wallets'),
 #                 Field('uuid'),
