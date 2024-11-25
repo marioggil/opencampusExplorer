@@ -26,19 +26,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def isContract(hash: str) -> bool:
-    """
-    Checks if a given hash corresponds to a smart contract on the Blockscout platform.
 
-    Args:
-        hash (str): The hash of the contract to verify.
-
-    Returns:
-        bool: Returns True if the hash corresponds to a smart contract, otherwise False.
-    """
-    url = f'https://opencampus-codex.blockscout.com/api/v2/smart-contracts/{hash}'
-    response = requests.get(url)
-    return response.status_code == 200
 
 def maxValue(num: float) -> int:
     """
@@ -576,25 +564,6 @@ def index2(request: Request):
                                             "recaptcha_site_key":recaptcha_site_key
                                             })
 
-def TxDetail(hash):
-    response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/transactions/%s"%(hash)).content)
-    item=response
-    print(hash)
-    data=  {'timestamp':item['timestamp'],
-        "fee":int(item["fee"]["value"]),
-        'block':item["block"],
-        'method':item["method"],
-        "to":item["to"]["hash"],
-        "from":item["from"]["hash"],
-        'tx_burnt_fee':item['tx_burnt_fee'],
-        "hash":item["hash"],
-        'priority_fee':item['priority_fee'],
-        'tx_types':item['tx_types'],
-        'gas_used':int(item['gas_used']),
-        'created_contract':item['created_contract'],
-        }
-    
-    return data
 
 @app.get("/Tx/{hash}", response_class=HTMLResponse)
 def Txhtml(request: Request,hash: str):
@@ -614,25 +583,9 @@ def Txhtml(request: Request,hash: str):
 
 #New block
 
-def BlockDetail(block):
-    response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/blocks/%s"%(block)).content)
-    item=response
-    data=  {"hash":item['hash'],
-        'height':item['height'],
-        'size':item['size'],
-        'miner':item['miner']['hash'],
-        'difficulty':item['difficulty'],
-        'burnt_fees':item['burnt_fees'],
-        'base_fee_per_gas':item['base_fee_per_gas'],
-        'parent_hash':item['parent_hash'],
-        'total_difficulty':item['total_difficulty'],
-            'tx_count':item['tx_count'],
-            'timestamp':item['timestamp'],
-            "gas_used":int(item['gas_used']),
-        'gas_limit':item['gas_limit'],
-        'tx_fees':int(item['tx_fees'])
-        }  
-    return data
+    
+
+
 
 @app.get("/block/{number}", response_class=HTMLResponse)
 def Blockhtml(request: Request, number:str):
@@ -660,7 +613,9 @@ def contractInfo(item):
             'verified_at': item['verified_at'],
             'is_verified': item['is_verified'],
             'name': item['name'],
-            'language': item['language']
+            'language': item['language'],
+            'compiler_version':item['compiler_version'],
+            'evm_version':item['evm_version']
     }
     return data
 
@@ -792,6 +747,257 @@ def TxsMyContract() -> Tuple[List[Dict]]:
     # Combine wallets from both transactions
     #all_wallets = walletsto.union(walletsfrom)
     #, all_wallets
-
-
     return Resultado
+
+
+
+
+
+
+# Create items in db
+
+#tx
+
+def selectItemsTx(item):
+    data={}
+    for key in ['timestamp',"fee",'block','method',"from",'tx_burnt_fee',"hash",'priority_fee','tx_types','gas_used','created_contract',"to",'result','revert_reason','transaction_tag','has_error_in_internal_transactions']:
+        if item[key] is None:
+            pass
+        else:
+            if key=="to": 
+                data["tow"]=item[key]["hash"]
+            elif key=="from": 
+                data["fromw"]=item[key]["hash"]
+            elif key=='created_contract':
+                data[key]=item[key]["hash"]
+            elif key=="fee":
+                data[key]=int(item[key]["value"])
+            else:
+                data[key]=item[key]
+    return data
+
+def TxDetail(hash):
+    response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/transactions/%s"%(hash)).content)
+    item=response
+    data=selectItemsTx(item)
+    return data
+
+
+def gettxperblock(block):
+    output=[]
+    response=json.loads(requests.get('https://edu-chain-testnet.blockscout.com/api/v2/blocks/%s/transactions'%(block)).content)
+    for item in response["items"]:
+        #incluir en base de datos
+        output.append(TxDetail(item["hash"]))
+    return output
+
+#blocks    
+def selectItemsBlock(item):
+    data={}
+    for key in ["hash",'height','size','miner','difficulty','burnt_fees','base_fee_per_gas','parent_hash','total_difficulty','tx_count','timestamp',"gas_used",'tx_fees','gas_limit']:
+        if item[key] is None:
+            pass
+        else:
+            if key=='miner':
+                data[key]=item[key]["hash"]
+            elif key=='height' or key=='tx_count' or key=='tx_fees' or key=="gas_used" or key=='tx_count' or key== 'gas_limit' or key=='total_difficulty' or key=='base_fee_per_gas' or key=='difficulty' or key=="burnt_fees":
+                data[key]=int(item[key])
+            else:
+                data[key]=item[key]
+    return data
+
+def BlockDetail(block):
+    response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/blocks/%s"%(block)).content)
+    data=selectItemsBlock(response)
+    return data
+
+
+@app.get("/getBlock2db/{block}")
+def getBlock2db(request: Request,block:str):
+    if block=="last":
+        response=json.loads(requests.get("https://edu-chain-testnet.blockscout.com/api/v2/blocks?type=block").content)
+        block=response["items"][0]["height"]
+    try:
+        if db((db.blocks.height==block)).count()==0:
+            dataBlock=BlockDetail(block)
+
+            db.blocks.insert(**dataBlock)
+            db.commit()
+    except:
+        error={"table":"blocks","block":block}
+        db.errors.insert(**error)
+        db.commit()
+    try:
+        if db((db.blocksbach.block_heightOCS==block)).count()!=0:
+            dataBlockBach=Blockbatch(block)
+            
+            db.blocksbach.insert(**dataBlockBach)
+            db.commit()
+    except:
+        error={"table":"blocksbach","block":block}
+        db.errors.insert(**error)
+        db.commit()
+
+    try:
+        blocktxs=gettxperblock(block)
+        
+    except:
+        error={"table":"txs","block":block}
+        db.errors.insert(**error)
+        db.commit()
+    
+    for tx in blocktxs:
+
+        if db((db.txs.hash==tx["hash"])).count()==0:
+            try:
+                db.txs.insert(**tx)
+                db.commit()
+            except:
+                error={"table":"txs","hash":tx[hash]}
+                db.errors.insert(**error)
+                db.commit()
+    return {"message":"OK"}
+
+
+#Blockbach
+def bachOCS2ARB(block):
+    keys=[['batch_numberOCS','batch_number'],['l1_block_heightARB','l1_block_height']]
+    output={}
+    print("https://opencampus-codex.blockscout.com/api/v2/blocks/%s"%(block))
+    response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/blocks/%s"%(block)).content)
+    if 'arbitrum' in response.keys():
+        data=response['arbitrum']
+        output['block_heightOCS']=block
+        output["hash"]=response["hash"]
+        for key in keys:
+            output[key[0]]=data[key[1]]
+    return output
+def bachARB2ETH(output):
+    response=json.loads(requests.get("https://arbitrum-sepolia.blockscout.com/api/v2/blocks/%s"%(output['l1_block_heightARB'])).content)
+    data=response['arbitrum']
+    datatot=response
+    output['batch_numberARB']=data['batch_number']
+    output["priority_feeARB"]=datatot["priority_fee"]
+    output["total_difficultyARB"]=datatot["total_difficulty"]
+    output["transaction_feesARB"]=datatot["transaction_fees"]
+    output["burnt_feesARB"]=datatot["burnt_fees"]
+    output["difficultyARB"]=datatot["difficulty"]
+    output["gas_limitARB"]=datatot["gas_limit"]
+    output["gas_usedARB"]=datatot["gas_used"]
+    output['l1_block_heightETH']=data['l1_block_height']
+    return output
+def bachETH2ETH(output):
+    response=json.loads(requests.get("https://eth-sepolia.blockscout.com/api/v2/blocks/%s"%(output['l1_block_heightETH'])).content)
+    datatot=response
+    output["total_difficultyETH"]=datatot["total_difficulty"]
+    output["transaction_feesETH"]=datatot["transaction_fees"]
+    output["burnt_feesETH"]=datatot["burnt_fees"]
+    output["difficultyETH"]=datatot["difficulty"]
+    output["gas_limitETH"]=datatot["gas_limit"]
+    output["gas_usedETH"]=datatot["gas_used"]
+    output["status"]="OK"
+    return output
+
+def Blockbatch(block):
+    try:
+        output=bachOCS2ARB(block)
+        output=bachARB2ETH(output)
+        output=bachETH2ETH(output)
+    except:
+        output['block_heightOCS']=block
+        output["status"]="Incomplete"
+    return output
+
+
+
+def contractInfo(item):
+    data={"is_vyper_contract":item['is_vyper_contract'],
+            'is_fully_verified':item['is_fully_verified'],
+            'is_blueprint':item['is_blueprint'],
+            'source_code':item['source_code'],
+            'verified_at': item['verified_at'],
+            'is_verified': item['is_verified'],
+            'name': item['name'],
+            'language': item['language'],
+            'compiler_version':item['compiler_version'],
+            'evm_version':item['evm_version']
+    }
+    return data
+
+def contractsDetail(hash):
+    response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/smart-contracts/%s"%(hash)).content)
+    data=contractInfo(response)
+    DetailContract=LLMC.AnalysisContract(data["source_code"])
+    try:
+        DetailContract=json.loads(DetailContract)
+    except:
+        DetailContract=json.loads(DetailContract[DetailContract.find("{"):DetailContract.find("}")+1])
+    data["functionality"]=DetailContract["Functionality Analysis"]
+    data["sectoruse"]=DetailContract["Sector and Use Classification"]
+    data["issues"]=DetailContract["Identification of Potential Issues"]
+    data["summary"]=DetailContract["Summary and Recommendations"]
+
+    return data
+
+def isContract(hash: str) -> bool:
+    """
+    Checks if a given hash corresponds to a smart contract on the Blockscout platform.
+
+    Args:
+        hash (str): The hash of the contract to verify.
+
+    Returns:
+        bool: Returns True if the hash corresponds to a smart contract, otherwise False.
+    """
+    url = f'https://opencampus-codex.blockscout.com/api/v2/smart-contracts/{hash}'
+    response = requests.get(url)
+    return response.status_code == 200
+
+
+@app.get("/getwallet2db/{hash}")
+def getwallet(request: Request,hash:str):
+    output={}
+    if not isContract(hash):
+        output['hash']=hash
+        output['is_contract']=False
+        db.wallets.insert(**output)
+        db.commit()
+    else:
+        output['hash']=hash
+        output['is_contract']=True
+        db.wallets.insert(**output)
+        db.commit()
+        outputcontract=contractsDetail(hash)
+        db.contracts.insert(**outputcontract)
+        db.commit()
+    return {"message":"OK"}
+
+@app.get("/listwalletsindb")
+def listwalletsindb():
+    s = db(db.txs.id > 0)
+    query=s.select(db.txs.fromw,db.txs.tow,distinct=True)
+    distinct_values = [row["tow"] for row in query]
+    distinct_values2 = [row["fromw"] for row in query]
+    output=set(distinct_values+distinct_values2)
+    s = db(db.wallets.id > 0)
+    query=s.select(db.wallets.hash,distinct=True)
+    distinct_values3 = set([row["hash"] for row in query])
+    
+    return output.difference(distinct_values3)
+
+
+
+
+
+
+
+
+# "Functionality Analysis"
+# "Sector and Use Classification"
+# "Identification of Potential Issues"
+# "Summary and Recommendations"
+
+# "functionality"
+# "sectoruse"
+# "issues"
+# "summary"
