@@ -88,6 +88,7 @@ Field('day_month',type="integer"),  # Día del mes como número
 Field('hour',type="integer")  # Hora en formato 24h
 )
 
+
 db.define_table("blocksbach",
 Field('block_heightOCS',type="integer"), # integer
 Field('batch_numberOCS',type="integer"), # integer
