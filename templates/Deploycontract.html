@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deploy Smart Contract with MetaMask</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/4.12.1/web3.min.js"></script>
+</head>
+<body>
+    <h1>Deploy Smart Contract with MetaMask</h1>
+    <button onclick="connectWallet()">Connect MetaMask</button>
+    <button onclick="deployContract()" id="deployButton" disabled>Deploy Contract</button>
+    <p id="status"></p>
+
+    <script>
+        let web3;
+        let selectedAccount;
+
+        const connectWallet = async () => {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    web3 = new Web3(window.ethereum);
+                    const accounts = await web3.eth.getAccounts();
+                    selectedAccount = accounts[0];
+                    document.getElementById('status').textContent = `Connected: ${selectedAccount}`;
+                    document.getElementById('deployButton').disabled = false;
+                } catch (error) {
+                    console.error('User denied account access');
+                }
+            } else {
+                console.log('Please install MetaMask!');
+            }
+        };
+
+        const deployContract = async () => {
+            if (!web3 || !selectedAccount) {
+                alert('Please connect to MetaMask first.');
+                return;
+            }
+
+            const abi = [{"name": "Transfer", "inputs": [{"name": "sender", "type": "address", "indexed": true}, {"name": "receiver", "type": "address", "indexed": true}, {"name": "value", "type": "uint256", "indexed": false}], "anonymous": false, "type": "event"}, {"name": "Approval", "inputs": [{"name": "owner", "type": "address", "indexed": true}, {"name": "spender", "type": "address", "indexed": true}, {"name": "value", "type": "uint256", "indexed": false}], "anonymous": false, "type": "event"}, {"stateMutability": "nonpayable", "type": "function", "name": "transfer", "inputs": [{"name": "_to", "type": "address"}, {"name": "_value", "type": "uint256"}], "outputs": [{"name": "", "type": "bool"}]}, {"stateMutability": "nonpayable", "type": "function", "name": "transferFrom", "inputs": [{"name": "_from", "type": "address"}, {"name": "_to", "type": "address"}, {"name": "_value", "type": "uint256"}], "outputs": [{"name": "", "type": "bool"}]}, {"stateMutability": "nonpayable", "type": "function", "name": "approve", "inputs": [{"name": "_spender", "type": "address"}, {"name": "_value", "type": "uint256"}], "outputs": [{"name": "", "type": "bool"}]}, {"stateMutability": "nonpayable", "type": "function", "name": "mint", "inputs": [{"name": "_to", "type": "address"}, {"name": "_value", "type": "uint256"}], "outputs": []}, {"stateMutability": "nonpayable", "type": "function", "name": "burn", "inputs": [{"name": "_value", "type": "uint256"}], "outputs": []}, {"stateMutability": "nonpayable", "type": "function", "name": "burnFrom", "inputs": [{"name": "_to", "type": "address"}, {"name": "_value", "type": "uint256"}], "outputs": []}, {"stateMutability": "view", "type": "function", "name": "name", "inputs": [], "outputs": [{"name": "", "type": "string"}]}, {"stateMutability": "view", "type": "function", "name": "symbol", "inputs": [], "outputs": [{"name": "", "type": "string"}]}, {"stateMutability": "view", "type": "function", "name": "decimals", "inputs": [], "outputs": [{"name": "", "type": "uint8"}]}, {"stateMutability": "view", "type": "function", "name": "balanceOf", "inputs": [{"name": "arg0", "type": "address"}], "outputs": [{"name": "", "type": "uint256"}]}, {"stateMutability": "view", "type": "function", "name": "allowance", "inputs": [{"name": "arg0", "type": "address"}, {"name": "arg1", "type": "address"}], "outputs": [{"name": "", "type": "uint256"}]}, {"stateMutability": "view", "type": "function", "name": "totalSupply", "inputs": [], "outputs": [{"name": "", "type": "uint256"}]}, {"stateMutability": "nonpayable", "type": "constructor", "inputs": [{"name": "_name", "type": "string"}, {"name": "_symbol", "type": "string"}, {"name": "_decimals", "type": "uint8"}, {"name": "_supply", "type": "uint256"}], "outputs": []}]; // Your contract ABI goes here
+            const bytecode = '0x3461012e57602061069a5f395f5160208161069a015f395f516020811161012e5750602060208261069a015f395f5101808261069a01604039505060206106ba5f395f5160208161069a015f395f516020811161012e5750602060208261069a015f395f5101808261069a01608039505060206106da5f395f518060081c61012e5760c05260206106fa5f395f5160c051604d811161012e5780600a0a905080820281158383830414171561012e579050905060e0526040515f5560605160015560805160025560a05160035560c05160045560e0516005336020525f5260405f205560e05160075533600855335f7fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef60e051610100526020610100a361055361013261000039610553610000f35b5f80fd5f3560e01c6002600c820660011b61053b01601e395f51565b63a9059cbb81186100bc57604436103417610537576004358060a01c610537576040526005336020525f5260405f208054602435808203828111610537579050905081555060056040516020525f5260405f2080546024358082018281106105375790509050815550604051337fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef60243560605260206060a3600160605260206060f35b6306fdde0381186104be573461053757602080604052806040015f54815260015460208201528051806020830101601f825f03163682375050601f19601f825160200101169050810190506040f35b6323b872dd81186104be57606436103417610537576004358060a01c610537576040526024358060a01c6105375760605260056040516020525f5260405f208054604435808203828111610537579050905081555060056060516020525f5260405f208054604435808201828110610537579050905081555060066040516020525f5260405f2080336020525f5260405f209050805460443580820382811161053757905090508155506060516040517fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef60443560805260206080a3600160805260206080f35b63095ea7b381186104be57604436103417610537576004358060a01c610537576040526024356006336020525f5260405f20806040516020525f5260405f20905055604051337f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b92560243560605260206060a3600160605260206060f35b6340c10f19811861031057604436103417610537576004358060a01c610537576040526008543318610537576040511561053757600754602435808201828110610537579050905060075560056040516020525f5260405f20805460243580820182811061053757905090508155506040515f7fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef60243560605260206060a3005b6395d89b4181186104be57346105375760208060405280604001600254815260035460208201528051806020830101601f825f03163682375050601f19601f825160200101169050810190506040f35b6342966c6881186103895760243610341761053757336040526004356060526103876104c2565b005b6379cc679081186104be57604436103417610537576004358060a01c6105375760a052600660a0516020525f5260405f2080336020525f5260405f2090508054602435808203828111610537579050905081555060a0516040526024356060526103f16104c2565b005b63313ce56781186104be57346105375760045460405260206040f35b6370a08231811861044a57602436103417610537576004358060a01c6105375760405260056040516020525f5260405f205460605260206060f35b6318160ddd81186104be57346105375760075460405260206040f35b63dd62ed3e81186104be57604436103417610537576004358060a01c610537576040526024358060a01c6105375760605260066040516020525f5260405f20806060516020525f5260405f2090505460805260206080f35b5f5ffd5b6040511561053757600754606051808203828111610537579050905060075560056040516020525f5260405f20805460605180820382811161053757905090508155505f6040517fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef60605160805260206080a3565b5f80fd04be040f04be03f304be010b046600180360026f04be01f28419055381181800a1657679706572830004000015'; // Your contract bytecode goes here
+
+            const contract = new web3.eth.Contract(abi);
+
+            try {
+                const deployTx = contract.deploy({
+                    data: bytecode,
+                    arguments: ["serte","ser",18,100000000000000000000000000000000] // Add constructor arguments if any
+                });
+
+                const gas = await deployTx.estimateGas();
+
+                const deployedContract = await deployTx.send({
+                    from: selectedAccount,
+                    gas: web3.utils.toHex(gas)
+                });
+
+                document.getElementById('status').textContent = `Contract deployed at: ${deployedContract.options.address}`;
+            } catch (error) {
+                console.error('Error deploying contract:', error);
+                document.getElementById('status').textContent = 'Error deploying contract. Check console for details.';
+            }
+        };
+    </script>
+</body>
+</html>

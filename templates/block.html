@@ -115,6 +115,14 @@
         </div>
     </div>
 </div>
+
+<div>
+    <div id="response-div"></div>
+    <button hx-get="{{ Block ["height"]}}/tx?style=html" hx-target="#response-div" hx-swap="beforeend">
+        Register!
+    </button>
+</div>
+
 </section>     
 {% endblock %}
 

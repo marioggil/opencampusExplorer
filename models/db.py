@@ -45,11 +45,10 @@ Field('count_login'),
 Field('wallet_id'),
 Field('created_on','datetime',default=datetime.datetime.now())
 )
-
 db.define_table("txs",
   Field('timestamp'),#Buscable
   Field('fee'),
-  Field('block'),#Buscable
+  Field('block',type="integer"),#Buscable
   Field('method'),
   Field('tx_burnt_fee'),
   Field('hash'),#Buscable
@@ -65,9 +64,10 @@ db.define_table("txs",
   Field('tow'),#Buscable
 )
 
+
 db.define_table("blocks",
 Field('hash'),#Buscable
-Field('height'),# integer
+Field('height',type="integer"),#Buscable # integer 
 Field('size'),# integer
 Field('miner'),
 Field('difficulty'),#  integer
@@ -82,9 +82,10 @@ Field('tx_fees'),#  integer
 Field('gas_limit'),#  integer
 )
 
+
 db.define_table("blocksbach",
-Field('block_heightOCS'), # integer
-Field('batch_numberOCS'), # integer
+Field('block_heightOCS',type="integer"), # integer
+Field('batch_numberOCS',type="integer"), # integer
 Field('l1_block_heightARB'),#  integer
 Field('batch_numberARB'),#  integer
 Field('priority_feeARB'), # integer
@@ -108,3 +109,22 @@ db.define_table("errors",
                 Field('hash'),
                 Field('block')
 )
+
+db.executesql('CREATE INDEX IF NOT EXISTS hash_finder_contract ON contracts(hash);')
+
+db.executesql('CREATE INDEX IF NOT EXISTS hash_finder_wallet ON wallets(hash);')
+db.executesql('CREATE INDEX IF NOT EXISTS is_contract_finder_wallet ON wallets(is_contract);')
+db.executesql('CREATE INDEX IF NOT EXISTS orcid_finder_wallet ON wallets(orcid);')
+
+db.executesql('CREATE INDEX IF NOT EXISTS timestamp_finder_tx ON txs(timestamp);')
+db.executesql('CREATE INDEX IF NOT EXISTS block_finder_tx ON txs(block);')
+db.executesql('CREATE INDEX IF NOT EXISTS hash_finder_tx ON txs(hash);')
+db.executesql('CREATE INDEX IF NOT EXISTS fromw_finder_tx ON txs(fromw);')
+db.executesql('CREATE INDEX IF NOT EXISTS tow_finder_tx ON txs(tow);')
+
+db.executesql('CREATE INDEX IF NOT EXISTS timestamp_finder_block ON blocks(timestamp);')
+db.executesql('CREATE INDEX IF NOT EXISTS height_finder_block ON blocks(height);')
+db.executesql('CREATE INDEX IF NOT EXISTS hash_finder_block ON blocks(hash);')
+
+db.executesql('CREATE INDEX IF NOT EXISTS block_finder_blocksbach ON blocksbach(block_hashOCS);')
+
