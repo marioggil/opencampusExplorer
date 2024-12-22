@@ -673,7 +673,6 @@ def contractsDetail(hash):
     db.commit() 
     return {"message":"OK"}
 
-
 @app.post("/wallet/{hash}/tx")
 def TxsWallet(request: Request,hash: str) :#-> Tuple[List[Dict], Set[str], bool]:
     """
