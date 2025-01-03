@@ -19,12 +19,12 @@ import datetime
 
 db.define_table("contracts",
                 Field('hash'),#Buscable
-                Field('is_vyper_contract'),
-                Field('is_fully_verified'),
-                Field('is_blueprint'),
+                Field('is_vyper_contract',type="boolean"),
+                Field('is_fully_verified',type="boolean"),
+                Field('is_blueprint',type="boolean"),
                 Field('source_code'),
                 Field('verified_at'),
-                Field('is_verified'),
+                Field('is_verified',type="boolean"),
                 Field('name'),
                 Field('language'),
                 Field('compiler_version'),
@@ -37,24 +37,24 @@ db.define_table("contracts",
 
 db.define_table("wallets",
 Field('hash'),#Buscable
-Field('is_contract'),#Buscable
+Field('is_contract',type="boolean"),#Buscable
 Field('orcid'),#Buscable #secreto
 Field('telegram'), #secreto
-Field('last_login'),
-Field('count_login'),
+Field('last_login',type="datetime"),
+Field('count_login',type="integer"),
 Field('wallet_id'),
 Field('created_on','datetime',default=datetime.datetime.now())
 )
 db.define_table("txs",
   Field('timestamp'),#Buscable
-  Field('fee'),
+  Field('fee',type="integer"),
   Field('block',type="integer"),#Buscable
   Field('method'),
-  Field('tx_burnt_fee'),
+  Field('tx_burnt_fee',type="integer"),
   Field('hash'),#Buscable
-  Field('priority_fee'),
+  Field('priority_fee',type="integer"),
   Field('tx_types'),
-  Field('gas_used'),
+  Field('gas_used',type="integer"),
   Field('created_contract'),
   Field('result'),
   Field('revert_reason'),
@@ -68,47 +68,66 @@ db.define_table("txs",
 db.define_table("blocks",
 Field('hash'),#Buscable
 Field('height',type="integer"),#Buscable # integer 
-Field('size'),# integer
+Field('size',type="integer"),# integer
 Field('miner'),
-Field('difficulty'),#  integer
-Field('burnt_fees'),#  integer
-Field('base_fee_per_gas'),#  integer
+Field('difficulty',type="integer"),#  integer
+Field('burnt_fees',type="integer"),#  integer
+Field('base_fee_per_gas',type="integer"),#  integer
 Field('parent_hash'),
-Field('total_difficulty'),#  integer
-Field('tx_count'),#  integer
+Field('total_difficulty',type="integer"),#  integer
+Field('tx_count',type="integer"),#  integer
 Field('timestamp'),#Buscable
-Field('gas_used'),#  integer
-Field('tx_fees'),#  integer
-Field('gas_limit'),#  integer
+Field('gas_used',type="integer"),#  integer
+Field('tx_fees',type="integer"),#  integer
+Field('gas_limit',type="integer"),#  integer
 )
 
 
 db.define_table("blocksbach",
 Field('block_heightOCS',type="integer"), # integer
 Field('batch_numberOCS',type="integer"), # integer
-Field('l1_block_heightARB'),#  integer
-Field('batch_numberARB'),#  integer
-Field('priority_feeARB'), # integer
-Field('total_difficultyARB'),#  integer
-Field('transaction_feesARB'), # integer
-Field('burnt_feesARB'),#  integer
-Field('difficultyARB'),#  integer
-Field('gas_limitARB'),#  integer
-Field('gas_usedARB'),#  integer
-Field('l1_block_heightETH'), # integer
-Field('total_difficultyETH'),#  integer
-Field('transaction_feesETH'), # integer
-Field('difficultyETH'),#  integer
-Field('gas_limitETH'),#  integer
-Field('gas_usedETH'), # integer
-Field('block_hashOCS')
+Field('l1_block_heightARB',type="integer"),#  integer
+Field('batch_numberARB',type="integer"),#  integer
+Field('priority_feeARB',type="integer"), # integer
+Field('total_difficultyARB',type="integer"),#  integer
+Field('transaction_feesARB',type="integer"), # integer
+Field('burnt_feesARB',type="integer"),#  integer
+Field('difficultyARB',type="integer"),#  integer
+Field('gas_limitARB',type="integer"),#  integer
+Field('gas_usedARB',type="integer"),#  integer
+Field('l1_block_heightETH',type="integer"), # integer
+Field('total_difficultyETH',type="integer"),#  integer
+Field('transaction_feesETH',type="integer"), # integer
+Field('difficultyETH',type="integer"),#  integer
+Field('gas_limitETH',type="integer"),#  integer
+Field('gas_usedETH',type="integer"), # integer
+Field('block_hashOCS',type="integer")
 )
 
 db.define_table("errors",
+                Field('created_on','datetime',default=datetime.datetime.now()),
                 Field('table'),
                 Field('hash'),
                 Field('block')
 )
+
+db.define_table("stadists_site",
+                Field('created_on','datetime',default=datetime.datetime.now()),
+                Field('n_wallets',type="integer"),
+                Field('n_contracts',type="integer"),
+                Field('n_contracts_is_vyper_contract',type="integer"),
+                Field('n_contracts_is_verified',type="integer"),
+                Field('n_contracts_language'),
+                Field('n_contracts_evm_version'),
+                Field('n_txs',type="integer"),
+                Field('n_txs_not_success',type="integer"),
+                Field('n_blocks',type="integer"),
+                Field('n_blocks_tx_count'),
+                Field('n_blocks_miner'),
+                
+)
+
+
 
 db.executesql('CREATE INDEX IF NOT EXISTS hash_finder_contract ON contracts(hash);')
 

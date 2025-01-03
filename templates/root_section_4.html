@@ -1,0 +1,28 @@
+
+<section class="section">
+    <div class="container">
+        <div class="columns is-multiline">
+
+
+ 
+            
+
+                {% for i in content %}
+                <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                    <div class="box box-index">
+                        <div>
+                            <p class="box-title">{{ i[0]}}</p>
+                            <p class="">{{ i[1]}}</p>
+                        </div>
+                        <div>
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+
+            </div>
+        </div>
+    </div>
+</section>

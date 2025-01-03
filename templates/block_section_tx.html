@@ -1,0 +1,39 @@
+
+<section class='section'>
+    <div class='container'>
+        <div class='columns is-centered'>
+            <div class='column is-full-mobile is-half-tablet is-full-desktop'>
+                <div class='box'>
+                    <table class='table is-fullwidth is-striped is-hoverable is-fullwidth'>
+                        <thead>
+                            <tr>
+                                <th>Hash</th>
+                                <th>Fee</th>
+                                <th>To</th>
+                                <th>From</th>
+                                <!-- <th>Tx burnt fee</th>-->
+                                <th>Gas used</th>
+                            </tr>
+                        </thead>
+                        
+                        <tbody>
+            {% for tx in content %}
+                        <tr>                                
+            <th><a href='/tx/{{tx["hash"]}}' title='{{tx["hash"]}}' class='card-footer-item'>{{tx["hash"]}}&nbsp; <img src='/static/link-solid.svg' alt=''></a> </th>
+                                <td> {{tx["fee"]}} </td>
+                                
+                                <td><a href=/wallet/{{tx["tow"]}} title='{{tx["tow"]}}' class='card-footer-item'>{{tx["tow"]}}&nbsp; <img src='/static/link-solid.svg' alt=''></a></td>
+                                <td><a href='/wallet/{{tx["fromw"]}}' title='{{tx["fromw"]}}' class='card-footer-item'>{{tx["fromw"]}}&nbsp; <img src='/static/link-solid.svg' alt=''></a></td>
+                                
+                                <td>{{tx["gas_used"]}} </td>
+                            </tr>    
+        
+            {% endfor %}
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>  
+        </div>
+    </div>
+</section>

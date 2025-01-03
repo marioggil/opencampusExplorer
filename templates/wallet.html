@@ -1,12 +1,234 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
 <div id="cy" class="box"></div>
 
 '{{ Tx }}'
 
 
+'{{ res }}'
 
 
+{% if Type=='Contract' %}
 
-Data  
+
+    <section class="">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-full-mobile is-half-tablet is-two-fifths-desktop">
+                    <h1 class="title" style="text-align: center;">{{ data ['Type']}}: {{ data ['hash']}}</h1>
+                </div>
+            </div>
+            <div class="columns is-multiline">
+
+                <div class="column is-full-mobile is-half-tablet is-one-third-desktop">   
+                    <div class="box box-index">
+                        <div>
+                            <p class="">Name</p>
+                            <p class="" title="{{ data ['Name']}}">{{ data ["Name"][:30] + '...'}}</p>
+                        </div>
+                        <div>
+                            <i class="fas fa-server"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                    <div class="box box-index">
+                        <div>
+                            <p class="">Vyper contract</p>
+                            <p class="">{{ data ["Vyper contract"]}}</p>
+                        </div>
+                        <div>
+                            <i class="fas fa-server"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                    <div class="box box-index">
+                        <div>
+                            <p class="">Language</p>
+                            <p class="">{{ data ["Language"]}}</p>
+                        </div>
+                        <div>
+                            <i class="fas fa-server"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                    <div class="box box-index">
+                        <div>
+                            <p class="">Fully verified</p>
+                            <p class="">{{ data ["Is fully verified"]}}</p>
+                        </div>
+                        <div>
+                            <i class="fas fa-server"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                    <div class="box box-index">
+                        <div>
+                            <p class="">Blueprint</p>
+                            <p class="">{{ data ["Blueprint"]}}</p>
+                        </div>
+                        <div>
+                            <i class="fas fa-server"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                    <div class="box box-index">
+                        <div>
+                            <p class="">Verified</p>
+                            <p class="">{{ data ["Verified"]}}</p>
+                        </div>
+                        <div>
+                            <i class="fas fa-server"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </section> 
+{% endif %}
+
+<div class="ranking">
+    <div class="wallet_db box is-flex is-flex-direction-column is-justify-content-center has-text-centered">
+        <h1 class="title is-6">Ranking of wallets with the highest number of outgoing transactions</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Wallet</th>
+                    <th>Transactions</th>
+                </tr>
+            </thead>
+            <tbody>                
+                {% for k,i in enumerate(ranking_to) %}
+                <tr>
+                    <td>{{ k+1 }}</td>
+                    <td><button onclick="zoomToNode(`{{ i[0] }}`)">{{ i[0] }}</button></td>
+                    <td>{{ i[1] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="wallet_db box is-flex is-flex-direction-column is-justify-content-center has-text-centered">
+        <h1 class="title is-6">Ranking of wallets with the highest number of incoming transactions</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Wallet</th>
+                    <th>Transactions</th>
+                </tr>
+            </thead>
+            <tbody>                
+                {% for k,i in enumerate(ranking_from) %}
+                <tr>
+                    <td>{{ k+1 }}</td>
+                    <td><button onclick="zoomToNode(`{{ i[0] }}`)">{{ i[0] }}</button></td>
+                    <td>{{ i[1] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
 
-'{{ data }}'
+</div>
+
+<script>
+    // Initialize Cytoscape
+    var cy = cytoscape({
+        container: document.getElementById('cy'), // container to render in
+        
+        elements: {{ res|safe }},
+
+        style: [ // the stylesheet for the graph
+            {
+                selector: 'node',
+                style: {
+                    'background-color': 'data(color)',
+                    'label': 'data(id)',
+                    'width': 10,
+                    'height': 10,
+                    'border-width': 1,
+                    'border-color': 'black'
+
+                }
+            },
+
+            {
+                selector: 'edge',
+                style: {
+                    'width': 'data(width)',
+                    'line-color': '#ccc',
+                    'target-arrow-color': '#ccc',
+                    'target-arrow-shape': 'triangle'
+                }
+            }
+        ],
+
+        layout: {
+            name: 'fcose',
+            nodeRepulsion: node => 9000,
+            // Ideal edge (non nested) length
+            idealEdgeLength: edge => 50,
+            // Divisor to compute edge forces
+            edgeElasticity: edge => 0.45,
+        }
+    });
+
+
+    cy.style().selector('node').style({
+        'label': 'data(id)',
+        'text-opacity': 0,
+        'text-wrap': 'wrap'
+      }).update();
+
+    // Add a click event to nodes
+    cy.on('tap', 'node', function(event) {
+        var node = event.target;
+        var url = node.data('url');
+        if (url) {
+            window.open(url, '_blank'); // Open the URL in a new tab
+        }
+    });
+    cy.on('mouseover', 'node', function(event) {
+        event.target.style('text-opacity', 1);
+      });
+      
+      cy.on('mouseout', 'node', function(event) {
+        event.target.style('text-opacity', 0);
+      });
+
+   
+    function zoomToNode(targetNodeId) {
+        const targetNode = cy.$(`#${targetNodeId}`);
+        
+        if (targetNode.length > 0) {
+            cy.animate({
+            center: {
+                eles: targetNode
+            },
+            zoom: 4, // Adjust this value to set the desired zoom level
+            duration: 1000 // Animation duration in milliseconds
+            });
+        } else {
+            console.log(`Node with ID ${targetNodeId} not found`);
+        }
+        }
+
+        
+</script>
+
+{% endblock %}

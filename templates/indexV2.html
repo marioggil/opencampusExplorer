@@ -3,193 +3,22 @@
 {% block content %}
 
 
-<section class="section">
-    <div class="container">
-        <div class="columns is-multiline">
-            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
-                <div class="box box-index">
-                    <div>
-                        <p class="box-title">Network utilization percentage</p>
-                        <p class="">{{ Data_general["network_utilization_percentage"]}}</p>
-                    </div>
-                    <div>
-                        <i class="fas fa-network-wired"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
-                <div class="box box-index">
-                    <div>
-                        <p class="box-title">Total blocks</p>
-                        <p class="">{{ Data_general["total_blocks"]}}</p>
-                    </div>
-                    <div>
-                        <i class="fas fa-ethernet"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">   
-                <div class="box box-index">
-                    <div>
-                        <p class="box-title">Total transactions</p>
-                        <p class="">{{ Data_general["total_transactions"]}}</p>
-                    </div>
-                    <div>
-                        <i class="fas fa-project-diagram"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">                
-                <div class="box box-index">
-                    <div>
-                        <p class="box-title">Transactions today</p>
-                        <p class="">{{ Data_general["transactions_today"]}}</p>
-                    </div>
-                    <div>
-                        <i class="fas fa-server"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
-                <div class="box box-index">
-                    <div>
-                        <p class="box-title">Total addresses</p>
-                        <p class="">{{ Data_general["total_addresses"]}}</p>
-                    </div>
-                    <div>
-                        <i class="fas fa-wifi"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
-                <div class="box box-index">
-                    <div>
-                        <p class="box-title">Gas used today</p>
-                        <p class="">{{ Data_general["gas_used_today"]}}</p>
-                    </div>
-                    <div>
-                        <i class="fab fa-battle-net"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
-                <div class="box box-index">
-                    <div>
-                        <p class="box-title">Average block time</p>
-                        <p class="">{{ Data_general["average_block_time"]}}</p>
-                    </div>
-                    <div>
-                        <i class="fas fa-network-wired"></i>
-                    </div>
-                </div>
+<div>
+    <div id="root_section_1" hx-get="root_section_1" hx-target="#root_section_1" hx-swap="outerHTML" hx-trigger="load delay:1s"></div>
+</div>
 
 
-            </div>
-        </div>
-    </div>
-</section>
+<div>
+    <div id="root_section_2" hx-get="root_section_2" hx-target="#root_section_2" hx-swap="outerHTML" hx-trigger="load delay:1s"></div>
+</div>
 
-<section class="section">
-    <div class="container">
-        <div class="columns is-centered">
-            <div class="column is-full-mobile is-half-tablet is-full-desktop">
-                <div class="box">
-                    <table class="table is-fullwidth is-striped is-hoverable is-fullwidth">
-                        <thead>
-                            <tr>
-                                <th>Block</th>
-                                <th>Hash</th>
-                                <th>Size</th>
-                                <!-- <th>Miner</th> -->
-                                <!--<th>Difficulty</th> -->
-                                <th>Burnt fees</th>
-                                <th># of Tx</th>
-                                <th>Timestamp</th>
-                                <th>Gas used</th>
-                                <!--<th>Gas limit</th>-->
-                                <th>Tx fees</th>
-                                
-                            </tr>
-                        </thead>
-                        
-                        <tbody>
-                            {% for i in BlocksToIndex %}
-                            <tr>
-                                <td><a href="/block/{{ i["height"]}}" title="{{ i["height"]}}" class="card-footer-item">{{ i["height"]}} &nbsp; <img src="/static/link-solid.svg" alt=""></a></td>
-                                <th title="{{ i["hash"] }}">{{ i["hash"][:10] + '...' }}</th>
-                                <td>{{ i["size"] }} <br> <span>Mean 50 Blocks {{ mean_size_Bl }}</span></td>
-                                <!-- <td title="{{ i["miner"] }}">{{ i["miner"][:10] + '...' }}</td>-->
-                                <!--<td>{{ i["difficulty"]}}</td> -->
-                                <td title="{{ i["burnt_fees"]}}">{{ i["burnt_fees"][:10] + '...'}}</td>
-                                <td>{{ i["tx_count"]}} <br> <span>Mean 50 Blocks {{mean_tx_count_Bl}}</span> </td>
-                                <td>{{ (i["timestamp"].split('T'))[0] }}<br> <span>{{ (i["timestamp"].split('T'))[1] }}</span> </td>
-                                <td>{{ i["gas_used"]}} <br> <span>Mean 50 Blocks {{mean_gas_used_Bl}}</span></td>
-                                <!-- <td title="{{ i["gas_limit"]}}">{{ i["gas_limit"][:10] + '...'}}</td> -->
-                                <td>{{ i["tx_fees"]}} <br> <span>Mean 50 Blocks {{mean_tx_fees_Bl}}</span></td>
-                                
-                                
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>  
-        </div>
-    </div>
-</section>
+<div>
+    <div id="root_section_3" hx-get="root_section_3" hx-target="#root_section_3" hx-swap="outerHTML" hx-trigger="load delay:1s"></div>
+</div>
+
+<div>
+    <div id="root_section_4" hx-get="root_section_4" hx-target="#root_section_4" hx-swap="outerHTML" hx-trigger="load delay:1s"></div>
+</div>
 
 
-<section class="section">
-    <div class="container">
-        <div class="columns is-centered">
-            <div class="column is-full-mobile is-half-tablet is-full-desktop">
-                <div class="box">
-                    <table class="table is-fullwidth is-striped is-hoverable is-fullwidth">
-                        <thead>
-                            <tr>
-                                <th>Hash</th>
-                                <th>Fee</th>
-                                <th>Block</th>
-                                <!--<th>Method</th> -->
-                                <th>To</th>
-                                <th>From</th>
-                                <!-- <th>Tx burnt fee</th>-->
-                                <th>Timestamp</th>
-                                <!--<th>Tx types</th>-->
-                                <!--<th>Gas limit</th>-->
-                                <th>Gas used</th>
-                                <!--<th>Priority fee</th>-->
-                                <!--<th>Created contract</th>-->
-                            </tr>
-                        </thead>
-                        
-                        <tbody>
-                            {% for i in TxtoIndex %}
-                            <tr>
-                                <th><a href="/tx/{{ i["hash"]}}" title="{{ i["hash"] }}" class="card-footer-item">{{ i["hash"][:10] + '...' }}&nbsp; <img src="/static/link-solid.svg" alt=""></a> </th>
-                                <td>{{ i["fee"]}} <br> <span>Mean of 50 {{mean_fee_tx}}</span></td>
-                                <td>{{ i["block"] }}</td>
-                                <!-- <td>{{ i["method"] }}</td>-->
-                                <!-- <td title="{{ i["to"] }}">{{ i["to"][:10] + '...' }}</td> -->
-                                <td><a href="/wallet/{{ i["to"]}}" title="{{ i["to"] }}" class="card-footer-item">{{ i["to"][:10] + '...' }}&nbsp; <img src="/static/link-solid.svg" alt=""></a></td>
-                                <td><a href="/wallet/{{ i["from"]}}" title="{{ i["from"] }}" class="card-footer-item">{{ i["from"][:10] + '...' }}&nbsp; <img src="/static/link-solid.svg" alt=""></a></td>
-                                <!--  <td title="{{ i["from"]}}">{{ i["from"][:10] + '...'}}</td>  -->
-                                <!-- http://127.0.0.1:7990/wallets?wallet=0x4A8b4a6a5a298ade31831121a68B8f5c975d4450 -->
-                                <!--<td>{{ i["tx_burnt_fee"] if i["tx_burnt_fee"] else '---'  }}</td>-->
-                                <td>{{ (i["timestamp"].split('T'))[0] }} <br> <span>{{(i["timestamp"].split('T'))[1]}}</span></td>
-                                <!--<td>{{ i["tx_types"] }}</td>-->
-                                <!--<td>{{ i["gas_limit"]}}</td>-->
-                                <td>{{ i["gas_used"]}} <br> <span>Mean of 50 {{mean_gas_used_tx}}</span></td>
-                                <!--<td>{{ i["priority_fee"]}}</td>-->
-                                <!--<td>{{ i["created_contract"]}}</td>-->
-                                
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>  
-        </div>
-    </div>
-</section>
 {% endblock %}

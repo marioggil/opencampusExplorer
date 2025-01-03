@@ -1,0 +1,55 @@
+
+
+
+
+
+    <div id="cy" class="box"></div>
+
+    <div class="ranking">
+        <div class="wallet_db box is-flex is-flex-direction-column is-justify-content-center has-text-centered">
+            <h1 class="title is-6">Ranking of wallets with the highest number of outgoing transactions</h1>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Wallet</th>
+                        <th>Transactions</th>
+                    </tr>
+                </thead>
+                <tbody>                
+                    {% for k,i in enumerate(ranking_to) %}
+                    <tr>
+                        <td>{{ k+1 }}</td>
+                        <td><button onclick="zoomToNode(`{{ i[0] }}`)">{{ i[0] }}</button></td>
+                        <td>{{ i[1] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="wallet_db box is-flex is-flex-direction-column is-justify-content-center has-text-centered">
+            <h1 class="title is-6">Ranking of wallets with the highest number of incoming transactions</h1>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Wallet</th>
+                        <th>Transactions</th>
+                    </tr>
+                </thead>
+                <tbody>                
+                    {% for k,i in enumerate(ranking_from) %}
+                    <tr>
+                        <td>{{ k+1 }}</td>
+                        <td><button onclick="zoomToNode(`{{ i[0] }}`)">{{ i[0] }}</button></td>
+                        <td>{{ i[1] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+
+    </div>
+    
