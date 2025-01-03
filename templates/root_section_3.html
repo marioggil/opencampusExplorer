@@ -1,0 +1,53 @@
+<section class="section">
+    <div class="container">
+        <div class="columns is-centered">
+            <div class="column is-full-mobile is-half-tablet is-full-desktop">
+                <div class="box">
+                    <table class="table is-fullwidth is-striped is-hoverable is-fullwidth">
+                        <thead>
+                            <tr>
+                                <th>Hash</th>
+                                <th>Fee</th>
+                                <th>Block</th>
+                                <!--<th>Method</th> -->
+                                <th>To</th>
+                                <th>From</th>
+                                <!-- <th>Tx burnt fee</th>-->
+                                <th>Timestamp</th>
+                                <!--<th>Tx types</th>-->
+                                <!--<th>Gas limit</th>-->
+                                <th>Gas used</th>
+                                <!--<th>Priority fee</th>-->
+                                <!--<th>Created contract</th>-->
+                            </tr>
+                        </thead>
+                        
+                        <tbody>
+                            {% for i in TxtoIndex %}
+                            <tr>
+                                <th><a href="/tx/{{ i["hash"]}}" title="{{ i["hash"] }}" class="card-footer-item">{{ i["hash"][:10] + '...' }}&nbsp; <img src="/static/link-solid.svg" alt=""></a> </th>
+                                <td>{{ i["fee"]}} <br> <span>Mean of 50 {{mean_fee_tx}}</span></td>
+                                <td>{{ i["block"] }}</td>
+                                <!-- <td>{{ i["method"] }}</td>-->
+                                
+                                <td><a href="/wallet/{{ i["tow"]}}" title="{{ i["tow"] }}" class="card-footer-item">{{ i["tow"][:10] + '...' }}&nbsp; <img src="/static/link-solid.svg" alt=""></a></td>
+                                <td><a href="/wallet/{{ i["fromw"]}}" title="{{ i["fromw"] }}" class="card-footer-item">{{ i["fromw"][:10] + '...' }}&nbsp; <img src="/static/link-solid.svg" alt=""></a></td>
+                                
+                                <!-- http://127.0.0.1:7990/wallets?wallet=0x4A8b4a6a5a298ade31831121a68B8f5c975d4450 -->
+                                <!--<td>{{ i["tx_burnt_fee"] if i["tx_burnt_fee"] else '---'  }}</td>-->
+                                <td>{{ (i["timestamp"].split('T'))[0] }} <br> <span>{{(i["timestamp"].split('T'))[1]}}</span></td>
+                                <!--<td>{{ i["tx_types"] }}</td>-->
+                                <!--<td>{{ i["gas_limit"]}}</td>-->
+                                <td>{{ i["gas_used"]}} <br> <span>Mean of 50 {{mean_gas_used_tx}}</span></td>
+                                <!--<td>{{ i["priority_fee"]}}</td>-->
+                                <!--<td>{{ i["created_contract"]}}</td>-->
+                                
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>  
+        </div>
+    </div>
+</section>
