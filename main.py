@@ -981,7 +981,6 @@ def search_data(wallet: str):
     # Retrieve wallet information from the database
     txs = db((db.txs.fromw == wallet) | (db.txs.tow == wallet) ).select()
     inserted=set()
-
     for tx in txs:
         data = {}
         data = {'data': {'id': tx["hash"], 'source': tx["fromw"], 'target': tx["tow"], 'width': 3}}
