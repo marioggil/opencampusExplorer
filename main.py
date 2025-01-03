@@ -931,6 +931,22 @@ def TxsInOut(request: Request,wallet: str):
         alltx.append(tx.as_dict())
     return alltx
 
+def sorted_actions(walletsactions: Dict[str, int]) -> List[Tuple[str, int]]:
+    """
+    Retrieves the top 5 wallets based on the number of actions, sorted in descending order.
+
+    Args:
+        walletsactions (Dict[str, int]): A dictionary where keys are wallet IDs and values are the number of actions.
+
+    Returns:
+        List[Tuple[str, int]]: A list of tuples containing the top 5 wallet IDs and their action counts.
+                            If there are fewer than 5 wallets, all of them are returned.
+    """
+    # Sort wallets by the number of actions in descending order
+    sorted_wallets_by_actions = sorted(walletsactions.items(), key=lambda x: x[1], reverse=True)
+
+    # Return the top 5 wallets, or fewer if there aren't that many
+    return sorted_wallets_by_actions[:5]
 
 @app.get("/wallet/{wallet}/tokens")
 def tokens_wallets(request: Request,wallet: str):
@@ -1002,7 +1018,6 @@ def search_data(wallet: str):
     # Retrieve wallet information from the database
     txs = db((db.txs.fromw == wallet) | (db.txs.tow == wallet) ).select()
     inserted=set()
-
     for tx in txs:
         data = {}
         data = {'data': {'id': tx["hash"], 'source': tx["fromw"], 'target': tx["tow"], 'width': 3}}
