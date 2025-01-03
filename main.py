@@ -250,7 +250,7 @@ def versionhtml(request: Request):
 
 #Blocks
 
-
+baseurl=str("clioscan.com.co")
 
 @app.get("/block/{number}", response_class=HTMLResponse)
 def Blockhtml(request: Request, number:str):
@@ -263,7 +263,7 @@ def Blockhtml(request: Request, number:str):
     Returns:
         HTMLResponse: Renders the 'index.html' template with metrics .
     """
-    baseurl=str(request.base_url)
+    # baseurl=str("clioscan.com.co")
     height=int(number)
     s = db(db.blocks.height == height)
     if s.count()==0:
@@ -304,7 +304,7 @@ def txperblock(request: Request,number:str):
 
 @app.post("/block/{number}")
 def Block2db(request: Request,number:str):
-    baseurl=str(request.base_url)
+    #baseurl=str(request.base_url)
     
     if number=="last":
         response=json.loads(requests.get("https://edu-chain-testnet.blockscout.com/api/v2/blocks?type=block").content)
@@ -408,7 +408,7 @@ def Txhtml(request: Request,hash: str):
     Returns:
         HTMLResponse: Renders the 'index.html' template with metrics.
     """
-    baseurl=str(request.base_url)
+    #baseurl=str(request.base_url)
 
     s = db(db.txs.hash == hash)
     if s.count()==0:
@@ -473,7 +473,7 @@ def TxsWallet(request: Request,hash: str) :#-> Tuple[List[Dict], Set[str], bool]
             - A set of unique wallet addresses involved in the transactions.
             - A boolean indicating if the wallet is a smart contract.
     """
-    baseurl=str(request.base_url)
+    #baseurl=str(request.base_url)
     towallet = requests.get('https://opencampus-codex.blockscout.com/api/v2/addresses/%s/transactions?filter=to'%(hash))
     fromwallet = requests.get('https://opencampus-codex.blockscout.com/api/v2/addresses/%s/transactions?filter=from'%(hash))
     for source in [towallet,fromwallet]:
@@ -489,7 +489,7 @@ def TxsWallet(request: Request,hash: str) :#-> Tuple[List[Dict], Set[str], bool]
 def getwalletorcontract2db(request: Request,wallet:str):
     output={}
     hash=wallet
-    baseurl=str(request.base_url)
+    #baseurl=str(request.base_url)
     if not isContract(hash):
         output['hash']=hash
         output['is_contract']=False
@@ -516,7 +516,7 @@ def wallethtml(request: Request,wallet: str):
     Returns:
         HTMLResponse: Renders the 'index.html' template with metrics.
     """
-    baseurl=str(request.base_url)
+    #baseurl=str(request.base_url)
 
     s = db(db.wallets.hash == wallet)
     if s.count()==0:
