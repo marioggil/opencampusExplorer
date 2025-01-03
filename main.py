@@ -32,7 +32,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+baseurl=str("https://clioscan.com.co")
 #Index
 
 def blocks_index(items):
@@ -250,7 +250,7 @@ def versionhtml(request: Request):
 
 #Blocks
 
-baseurl=str("clioscan.com.co")
+
 
 @app.get("/block/{number}", response_class=HTMLResponse)
 def Blockhtml(request: Request, number:str):
