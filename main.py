@@ -402,7 +402,7 @@ def versionhtml(request: Request):
 
 #Blocks
 
-
+baseurl=str("clioscan.com.co")
 
 @app.get("/block/{number}", response_class=HTMLResponse)
 def Blockhtml(request: Request, number:str):
