@@ -1,0 +1,117 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+
+
+
+
+
+
+
+
+
+
+
+    <section class="">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-full-mobile is-half-tablet is-two-fifths-desktop">
+                    <h1 class="title" style="text-align: center;">{{ data ['Type']}}: {{ data ['hash']}}</h1>
+                </div>
+            </div>
+            <div id="wallet_section_ranking" hx-get="{{ data ['hash']}}/ranking" hx-target="#wallet_section_ranking" hx-swap="outerHTML" hx-trigger="load delay:1s"></div>
+
+
+            <div class="columns is-multiline">
+
+                <div class="column is-full-mobile is-half-tablet is-one-third-desktop">   
+                    <div class="box box-index">
+                        <div>
+                            <p class="">Name</p>
+                            <p class="" title="{{ data ['Name']}}">{{ data ["Name"][:30] + '...'}}</p>
+                        </div>
+                        <div>
+                            <i class="fas fa-server"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                    <div class="box box-index">
+                        <div>
+                            <p class="">Vyper contract</p>
+                            <p class="">{{ data ["Vyper contract"]}}</p>
+                        </div>
+                        <div>
+                            <i class="fas fa-server"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                    <div class="box box-index">
+                        <div>
+                            <p class="">Language</p>
+                            <p class="">{{ data ["Language"]}}</p>
+                        </div>
+                        <div>
+                            <i class="fas fa-server"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                    <div class="box box-index">
+                        <div>
+                            <p class="">Fully verified</p>
+                            <p class="">{{ data ["Is fully verified"]}}</p>
+                        </div>
+                        <div>
+                            <i class="fas fa-server"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                    <div class="box box-index">
+                        <div>
+                            <p class="">Blueprint</p>
+                            <p class="">{{ data ["Blueprint"]}}</p>
+                        </div>
+                        <div>
+                            <i class="fas fa-server"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
+                    <div class="box box-index">
+                        <div>
+                            <p class="">Verified</p>
+                            <p class="">{{ data ["Verified"]}}</p>
+                        </div>
+                        <div>
+                            <i class="fas fa-server"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </section> 
+
+
+
+<H1>Funtionality</H1>
+    <p class="">{{ data["Funtionality"]}}</p>
+    <H1>Sector Use</H1>
+    <p class="">{{ data["Sector Use"]}}</p>
+    <H1>Issues</H1>
+    <p class="">{{ data["Issues"]}}</p>
+    <H1>Summary</H1>
+    <p class="">{{ data["summary"]}}</p>
+
+
+
+
+{% endblock %}
