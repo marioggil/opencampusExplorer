@@ -21,6 +21,7 @@ from config.parameters import recaptcha_site_key, recaptcha_secret_key
 import datetime
 import logging
 from dataclasses import dataclass
+import os
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -32,7 +33,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-baseurl=str("https://clioscan.com.co")
+def extractConfig(nameModel="SystemData",relPath=os.path.join("private/experiment_config.json"),dataOut="keygroq"):
+    configPath=os.path.join(os.getcwd(),relPath)
+    with open(configPath, 'r', encoding='utf-8') as file:
+        config = json.load(file)[nameModel]
+    Output= config[dataOut]
+    return Output
+keygroq=extractConfig(nameModel="SystemData",dataOut="keygroq")
+baseurl=extractConfig(nameModel="SystemData",dataOut="baseurl")
 #Index
 
 def blocks_index(items):
@@ -268,9 +276,8 @@ def Blockhtml(request: Request, number:str):
     s = db(db.blocks.height == height)
     if s.count()==0:
         requests.post(baseurl+"/block/%s"%(height))
-    Block = db(db.blocks.height == height).select().last()
 
-    return templates.TemplateResponse("block.html", {"request": request,"Block":Block,"recaptcha_site_key":recaptcha_site_key})
+    return templates.TemplateResponse("block.html", {"request": request,"height":height,"recaptcha_site_key":recaptcha_site_key})
 
 @app.get("/block/{number}/tx")
 def txperblockfind(request: Request,number:str,style:str="json",max:int=-1):
@@ -292,7 +299,29 @@ def txperblockfind(request: Request,number:str,style:str="json",max:int=-1):
     if style=="html":
         return templates.TemplateResponse("block_section_tx.html", {"request": request,"content":output,"recaptcha_site_key":recaptcha_site_key})
 
-        
+
+@app.get("/block/section_1/{number}", response_class=HTMLResponse)
+def block_section_1(request: Request,number:str):
+    """
+    Renders a page with all  metrics of Educhain.
+
+    Args:
+        request (Request): The request object.
+
+    Returns:
+        HTMLResponse: Renders the 'indexV2.html' template with metrics.
+    """
+    
+    height=int(number)
+    Block = db(db.blocks.height == height).select().last()
+    print(Block)
+    return templates.TemplateResponse("block_section_1.html", 
+                                        {
+                                            "request": request,
+                                            "Block":Block ,
+                                            "enumerate": enumerate,
+                                            "recaptcha_site_key":recaptcha_site_key
+                                            })        
 
 
 @app.post("/block/{number}/tx")
@@ -322,7 +351,28 @@ def Block2db(request: Request,number:str):
         db.commit()
     return {"message":"OK"}
 
+@app.get("/block/section_2/{number}", response_class=HTMLResponse)
+def block_section_2(request: Request,number:str):
+    """
+    Renders a page with all  metrics of Educhain.
 
+    Args:
+        request (Request): The request object.
+
+    Returns:
+        HTMLResponse: Renders the 'indexV2.html' template with metrics.
+    """
+    
+    height=int(number)
+    Block = db(db.blocksbach.block_heightOCS == height).select().last()
+    print(Block)
+    return templates.TemplateResponse("block_section_2.html", 
+                                        {
+                                            "request": request,
+                                            "Block":Block ,
+                                            "enumerate": enumerate,
+                                            "recaptcha_site_key":recaptcha_site_key
+                                            })    
 
 
 def BlockDetail(block):
@@ -371,6 +421,9 @@ def Blockbatch(request: Request,number:str):
         db.commit()
         return {"message":"Error"}
     
+
+
+
 
 #Tx
 
@@ -426,7 +479,7 @@ def Txhtml(request: Request,hash: str):
 
 
 #Wallet
-def isContract(hash: str) -> bool:
+def isContract(hash: str,find_online:bool = True) -> int:
     """
     Checks if a given hash corresponds to a smart contract on the Blockscout platform.
 
@@ -434,18 +487,29 @@ def isContract(hash: str) -> bool:
         hash (str): The hash of the contract to verify.
 
     Returns:
-        bool: Returns True if the hash corresponds to a smart contract, otherwise False.
+        int: Returns 1 if the hash corresponds to a smart contract, 0 in is a wallet and 2 if no verificated yet.
     """
-    url = f'https://opencampus-codex.blockscout.com/api/v2/smart-contracts/{hash}'
-    response = requests.get(url)
-    return response.status_code == 200
+    s = db(db.wallets.hash == hash)
+    if s.count()==0:
+        if find_online:
+            url = f'https://opencampus-codex.blockscout.com/api/v2/smart-contracts/{hash}'
+            response = requests.get(url)
+            if response.status_code == 200:
+                return 1
+            else: 
+                return 0
+        else:
+            return 2
+    else:
+        data=s.select().last().as_dict()
+        return data["is_contract"]
 
 
 
 def contractsDetail(hash):
     response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/smart-contracts/%s"%(hash)).content)
     data=select_item_contract(response)
-    DetailContract=LLMC.AnalysisContract(data["source_code"])
+    DetailContract=LLMC.AnalysisContract(keygroq,data["source_code"])
     try:
         DetailContract=json.loads(DetailContract)
     except:
@@ -490,15 +554,15 @@ def getwalletorcontract2db(request: Request,wallet:str):
     output={}
     hash=wallet
     #baseurl=str(request.base_url)
-    if not isContract(hash):
+    if isContract(hash)==0:
         output['hash']=hash
-        output['is_contract']=False
+        output['is_contract']=0
         db.wallets.insert(**output)
         db.commit()
         return {"message":"OK"}
     else:
         output['hash']=hash
-        output['is_contract']=True
+        output['is_contract']=1
         db.wallets.insert(**output)
         db.commit()
         contractsDetail(hash) 
@@ -526,8 +590,8 @@ def wallethtml(request: Request,wallet: str):
     data={}
     s = db(db.wallets.hash == wallet).select().last()
     data["hash"]=wallet
-
-    if s["is_contract"]=="True":
+    print(data)
+    if s["is_contract"]==1:
         data["Type"]="Contract"
         contract = db(db.contracts.hash == wallet).select().last()
         data["Vyper contract"]=contract['is_vyper_contract']
@@ -549,17 +613,50 @@ def wallethtml(request: Request,wallet: str):
         
     Tx=requests.get(baseurl+"/wallet/%s/tx"%(wallet)).content
     Result,ranking_to, ranking_from=search_data(wallet)
-    print(Tx)
+    len0=[len(Result),len(ranking_to),len(ranking_from)]
+    if data["Type"]=="Contract":
+        return templates.TemplateResponse("wallet_contract.html", {"request": request,
+        "Tx":Tx,
+        "data":data,
+        "res":Result,
+        "ranking_to": ranking_to,
+        "ranking_from": ranking_from,
+        "enumerate": enumerate,
+        "Type":data["Type"],
+        "len0":len0,
+        "recaptcha_site_key":recaptcha_site_key})
+    if data["Type"]=="Wallet":
+                return templates.TemplateResponse("wallet_user.html", {"request": request,
+        "Tx":Tx,
+        "data":data,
+        "res":Result,
+        "ranking_to": ranking_to,
+        "ranking_from": ranking_from,
+        "enumerate": enumerate,
+        "Type":data["Type"],
+        "recaptcha_site_key":recaptcha_site_key})
 
-    return templates.TemplateResponse("wallet.html", {"request": request,
-    "Tx":Tx,
-    "data":data,
-    "res":Result,
-    "ranking_to": ranking_to,
-    "ranking_from": ranking_from,
-    "enumerate": enumerate,
-    "Type":data["Type"],
-    "recaptcha_site_key":recaptcha_site_key})
+@app.get("/wallet/{wallet}/ranking", response_class=HTMLResponse)
+def walletranking(request: Request,wallet: str):
+    """
+    Renders a page with metrics of Transactions.
+
+    Args:
+        request (Request): The request object.
+
+    Returns:
+        HTMLResponse: Renders the 'index.html' template with metrics.
+    """
+    Result,ranking_to, ranking_from=search_data(wallet)
+    len0=[len(Result),len(ranking_to),len(ranking_from)]
+    return templates.TemplateResponse("wallet_ranking.html", {"request": request,
+        "res":Result,
+        "ranking_to": ranking_to,
+        "ranking_from": ranking_from,
+        "enumerate": enumerate,
+        "len0":len0,
+        "recaptcha_site_key":recaptcha_site_key})
+
 
 @app.get("/wallet/{wallet}/tx")
 def TxsInOut(request: Request,wallet: str):
@@ -587,6 +684,15 @@ def sorted_actions(walletsactions: Dict[str, int]) -> List[Tuple[str, int]]:
     # Return the top 5 wallets, or fewer if there aren't that many
     return sorted_wallets_by_actions[:5]
 
+def color_wallet(wallet:str,walletverif:str):
+    if wallet==walletverif:
+        return "#4b4d4c"
+    if isContract(walletverif,find_online=False)==1:
+        return "#744b97"
+    if isContract(walletverif,find_online=False)==2:
+        return "#122fe5" 
+
+
 def search_data(wallet: str):
     """
     Searches for data related to a specific wallet ID and ranks the associated wallets by actions.
@@ -609,15 +715,17 @@ def search_data(wallet: str):
     # Retrieve wallet information from the database
     txs = db((db.txs.fromw == wallet) | (db.txs.tow == wallet) ).select()
     inserted=set()
+
     for tx in txs:
         data = {}
         data = {'data': {'id': tx["hash"], 'source': tx["fromw"], 'target': tx["tow"], 'width': 3}}
         ranking_to[tx["tow"]] = ranking_to.get(tx["tow"], 0) + 1
         ranking_from[tx["fromw"]] = ranking_from.get(tx["fromw"], 0) + 1
         if not tx["tow"] in inserted:
-            temp2.append({'data': {'id': tx["tow"], 'url': tx["tow"], 'color': '#27ae60'}})
+
+            temp2.append({'data': {'id': tx["tow"], 'url': tx["tow"], 'color': color_wallet(wallet,tx["tow"])}})
         if not tx["fromw"] in inserted:
-            temp2.append({'data': {'id': tx["fromw"], 'url': tx["fromw"], 'color': '#27ae60'}})
+            temp2.append({'data': {'id': tx["fromw"], 'url': tx["fromw"], 'color': color_wallet(wallet,tx["fromw"])}})
         temp1.append(data)
     output=temp2+temp1
     

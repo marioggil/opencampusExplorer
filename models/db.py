@@ -37,7 +37,7 @@ db.define_table("contracts",
 
 db.define_table("wallets",
 Field('hash'),#Buscable
-Field('is_contract',type="boolean"),#Buscable
+Field('is_contract',type="integer"),#Buscable
 Field('orcid'),#Buscable #secreto
 Field('telegram'), #secreto
 Field('last_login',type="datetime"),

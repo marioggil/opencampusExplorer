@@ -1,102 +1,18 @@
-{% extends "layout.html" %}
-
-{% block content %}
-
-<div id="cy" class="box"></div>
-
-'{{ Tx }}'
 
 
-'{{ res }}'
 
 
-{% if Type=='Contract' %}
-
-
-    <section class="">
-        <div class="container">
-            <div class="columns is-centered">
-                <div class="column is-full-mobile is-half-tablet is-two-fifths-desktop">
-                    <h1 class="title" style="text-align: center;">{{ data ['Type']}}: {{ data ['hash']}}</h1>
-                </div>
-            </div>
-            <div class="columns is-multiline">
-
-                <div class="column is-full-mobile is-half-tablet is-one-third-desktop">   
-                    <div class="box box-index">
-                        <div>
-                            <p class="">Name</p>
-                            <p class="" title="{{ data ['Name']}}">{{ data ["Name"][:30] + '...'}}</p>
-                        </div>
-                        <div>
-                            <i class="fas fa-server"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
-                    <div class="box box-index">
-                        <div>
-                            <p class="">Vyper contract</p>
-                            <p class="">{{ data ["Vyper contract"]}}</p>
-                        </div>
-                        <div>
-                            <i class="fas fa-server"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
-                    <div class="box box-index">
-                        <div>
-                            <p class="">Language</p>
-                            <p class="">{{ data ["Language"]}}</p>
-                        </div>
-                        <div>
-                            <i class="fas fa-server"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
-                    <div class="box box-index">
-                        <div>
-                            <p class="">Fully verified</p>
-                            <p class="">{{ data ["Is fully verified"]}}</p>
-                        </div>
-                        <div>
-                            <i class="fas fa-server"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
-                    <div class="box box-index">
-                        <div>
-                            <p class="">Blueprint</p>
-                            <p class="">{{ data ["Blueprint"]}}</p>
-                        </div>
-                        <div>
-                            <i class="fas fa-server"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="column is-full-mobile is-half-tablet is-one-third-desktop">
-                    <div class="box box-index">
-                        <div>
-                            <p class="">Verified</p>
-                            <p class="">{{ data ["Verified"]}}</p>
-                        </div>
-                        <div>
-                            <i class="fas fa-server"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div style="display: flex; width: 100%; min-height: 300px;">
+    <div style="width: 65%; background-color: #f0f0f0; padding: 20px;">
+        {% if len0[1] > 0 %}
+        <div id="cy" class="box"></div>
+        {% endif %}  
     </div>
-    </section> 
-{% endif %}
+    <div style="width: 35%; background-color: #e0e0e0; padding: 20px;">
+        
+
+
+{% if len0[1] > 0 %}
 
 <div class="ranking">
     <div class="wallet_db box is-flex is-flex-direction-column is-justify-content-center has-text-centered">
@@ -120,7 +36,10 @@
             </tbody>
         </table>
     </div>
-    
+
+{% endif %}    
+
+{% if len0[2] > 0 %}
     <div class="wallet_db box is-flex is-flex-direction-column is-justify-content-center has-text-centered">
         <h1 class="title is-6">Ranking of wallets with the highest number of incoming transactions</h1>
         <table class="table">
@@ -144,6 +63,10 @@
     </div>
 
 
+</div>
+{% endif %} 
+
+</div>
 </div>
 
 <script>
@@ -230,5 +153,3 @@
 
         
 </script>
-
-{% endblock %}
