@@ -1,11 +1,6 @@
 import os
 import json
-def extractConfig(nameModel="SystemData",relPath=os.path.join("private/experiment_config.json"),dataOut="keygroq"):
-    configPath=os.path.join(os.getcwd(),relPath)
-    with open(configPath, 'r', encoding='utf-8') as file:
-        config = json.load(file)[nameModel]
-    Output= config[dataOut]
-    return Output
+
 
 prompt="""You are an expert in blockchain smart contract analysis. You will be provided with the source code of a smart contract. Your task is to perform a comprehensive analysis of the contract, covering the following aspects:
 
@@ -48,8 +43,8 @@ Respond only with valid JSON. Do not write an introduction or summary.
 """    
 
 
-def AnalysisContract(source):
-    keygroq=extractConfig(nameModel="SystemData",dataOut="keygroq")
+def AnalysisContract(keygroq,source):
+    
     from groq import Groq
     client = Groq(
     api_key=keygroq,
@@ -61,6 +56,6 @@ def AnalysisContract(source):
                 "content": prompt%(source),
             }
         ],
-        model="llama-3.1-70b-versatile",
+        model="llama-3.3-70b-versatile",
     )
     return chat_completion.choices[0].message.content
