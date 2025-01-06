@@ -29,7 +29,7 @@
                 {% for k,i in enumerate(ranking_to) %}
                 <tr>
                     <td>{{ k+1 }}</td>
-                    <td><button onclick="zoomToNode(`{{ i[0] }}`)">{{ i[0] }}</button></td>
+                    <td><button onclick="zoomToNode(`{{ i[0] }}`)">{{ i[0][:20] + '...' }}</button></td>
                     <td>{{ i[1] }}</td>
                 </tr>
                 {% endfor %}
@@ -54,7 +54,7 @@
                 {% for k,i in enumerate(ranking_from) %}
                 <tr>
                     <td>{{ k+1 }}</td>
-                    <td><button onclick="zoomToNode(`{{ i[0] }}`)">{{ i[0] }}</button></td>
+                    <td><button onclick="zoomToNode(`{{ i[0] }}`)">{{ i[0][:20] + '...' }}</button></td>
                     <td>{{ i[1] }}</td>
                 </tr>
                 {% endfor %}

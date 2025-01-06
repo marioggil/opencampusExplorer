@@ -2,22 +2,11 @@
 
 {% block content %}
 
-
-
-
-
-
-
-
-
-
-
-
     <section class="">
         <div class="container">
             <div class="columns is-centered">
-                <div class="column is-full-mobile is-half-tablet is-two-fifths-desktop">
-                    <h1 class="title" style="text-align: center;">{{ data ['Type']}}: {{ data ['hash']}}</h1>
+                <div class="column is-full-mobile is-half-tablet is-two-fifths-desktop" style="padding-top: 2%;">
+                    <h3 class="title" style="text-align: center;">{{ data ['Type']}}: {{ data ['hash']}}</h3>
                 </div>
             </div>
             <div id="wallet_section_ranking" hx-get="{{ data ['hash']}}/ranking" hx-target="#wallet_section_ranking" hx-swap="outerHTML" hx-trigger="load delay:1s"></div>
@@ -101,15 +90,22 @@
     </section> 
 
 
-
-<H1>Funtionality</H1>
-    <p class="">{{ data["Funtionality"]}}</p>
-    <H1>Sector Use</H1>
-    <p class="">{{ data["Sector Use"]}}</p>
-    <H1>Issues</H1>
-    <p class="">{{ data["Issues"]}}</p>
-    <H1>Summary</H1>
-    <p class="">{{ data["summary"]}}</p>
+<section class="section">
+    <div class="container">
+        <h1 class="title is-4">Functionality</h1>
+        <p class="content">{{ data["Funtionality"] }}</p>
+        
+        <h1 class="title is-4">Sector Use</h1>
+        <p class="content">{{ data["Sector Use"] }}</p>
+        
+        <h1 class="title is-4">Issues</h1>
+        <p class="content">{{ data["Issues"] }}</p>
+        
+        <h1 class="title is-4">Summary</h1>
+        <p class="content">{{ data["summary"] }}</p>
+    </div>
+</section>
+      
 
 
 

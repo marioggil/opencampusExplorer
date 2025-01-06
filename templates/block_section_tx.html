@@ -1,35 +1,44 @@
-<h1>Transactions</h1>
-<section class='section'>
-    <div class='container'>
-        <div class='columns is-centered'>
-            <div class='column is-full-mobile is-half-tablet is-full-desktop'>
-                <div class='box'>
-                    <table class='table is-fullwidth is-striped is-hoverable is-fullwidth'>
+<section class="section">
+    <div class="container">
+        <h1 class="title is-4">Transactions</h1>
+        <div class="columns is-centered">
+            <div class="column is-full-mobile is-half-tablet is-full-desktop">
+                <div class="box">
+                    <table class="table is-fullwidth is-striped is-hoverable">
                         <thead>
                             <tr>
                                 <th>Hash</th>
                                 <th>Fee</th>
                                 <th>To</th>
                                 <th>From</th>
-                                <!-- <th>Tx burnt fee</th>-->
-                                <th>Gas used</th>
+                                <th>Gas Used</th>
                             </tr>
                         </thead>
-                        
                         <tbody>
-            {% for tx in content %}
-                        <tr>                                
-            <th><a href='/tx/{{tx["hash"]}}' title='{{tx["hash"]}}' class='card-footer-item'>{{tx["hash"]}}&nbsp; <img src='/static/link-solid.svg' alt=''></a> </th>
-                                <td> {{tx["fee"]}} </td>
-                                
-                                <td><a href=/wallet/{{tx["tow"]}} title='{{tx["tow"]}}' class='card-footer-item'>{{tx["tow"]}}&nbsp; <img src='/static/link-solid.svg' alt=''></a></td>
-                                <td><a href='/wallet/{{tx["fromw"]}}' title='{{tx["fromw"]}}' class='card-footer-item'>{{tx["fromw"]}}&nbsp; <img src='/static/link-solid.svg' alt=''></a></td>
-                                
-                                <td>{{tx["gas_used"]}} </td>
-                            </tr>    
-        
-            {% endfor %}
-                            
+                            {% for tx in content %}
+                            <tr>
+                                <td>
+                                    <a href="/tx/{{ tx['hash'] }}" title="{{ tx['hash'] }}" class="card-footer-item">
+                                        {{ tx['hash'][:30] + '...' }}&nbsp;
+                                        <img src="/static/link-solid.svg" alt="Link">
+                                    </a>
+                                </td>
+                                <td>{{ tx['fee'] }}</td>
+                                <td>
+                                    <a href="/wallet/{{ tx['tow'] }}" title="{{ tx['tow'] }}" class="card-footer-item">
+                                        {{ tx['tow'][:30] + '...' }}&nbsp;
+                                        <img src="/static/link-solid.svg" alt="Link">
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="/wallet/{{ tx['fromw'] }}" title="{{ tx['fromw'] }}" class="card-footer-item">
+                                        {{ tx['fromw'][:30] + '...' }}&nbsp;
+                                        <img src="/static/link-solid.svg" alt="Link">
+                                    </a>
+                                </td>
+                                <td>{{ tx['gas_used'] }}</td>
+                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>

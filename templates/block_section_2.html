@@ -1,34 +1,58 @@
-<h1>Batch</h1>
+<section class="section">
+  <div class="container">
+    <h1 class="title is-4 has-text-centered">Batch</h1>
 
-    <div style="width: 150px; height: 100px; border: 2px solid #333; display: flex; justify-content: center; align-items: center; padding: 10px; text-align: center; background-color: #f0f0f0;">
-        <p>Educhain (Testnet)</p>
-        <p class="box-title">block Educhain {{ Block['block_heightOCS']}}</p>
-        <p class="box-title">batch Educhain {{ Block['batch_numberOCS']}}</p>
-    </div>
-    
-    <div style="width: 150px; height: 100px; border: 2px solid #333; display: flex; justify-content: center; align-items: center; padding: 10px; text-align: center; background-color: #f0f0f0;">
-        <p class="">Arbitrum (Sepolia)</p>
-        <p class="box-title">Block Arbitrum <a href="https://arbitrum-sepolia.blockscout.com/block/{{ Block['l1_block_heightARB']}}" title="{{ Block['l1_block_heightARB']}}" class="card-footer-item">{{ Block['l1_block_heightARB']}} </a>        </p>
-        <p class="box-title">Batch Arbitrum {{ Block['batch_numberARB']}}</p>
-        <p class="box-title">Priority fee Arbitrum {{ Block['priority_feeARB']}}</p>
-        <p class="box-title">Total difficulty Arbitrum {{ Block['total_difficultyARB']}}</p>  
-        <p class="box-title">Transactions fees Arbitrum {{ Block['transaction_feesARB']}}</p> 
-        <p class="box-title">Burnt fees Arbitrum {{ Block['burnt_feesARB']}}</p>
-        <p class="box-title">Difficulty Arbitrum {{ Block['difficultyARB']}}</p>
-        <p class="box-title">Gas limit Arbitrum {{ Block['gas_limitARB']}}</p>
-        <p class="box-title">Gas used Arbitrum {{ Block['gas_usedARB']}}</p>
-    </div>
-    
+    <div class="columns is-vcentered is-multiline has-text-centered">
+      <!-- Educhain (Testnet) -->
+      <div class="column is-4">
+        <div class="box">
+          <p class="has-text-weight-bold">Educhain (Testnet)</p>
+          <p class="box-title">Block Educhain {{ Block['block_heightOCS'] }}</p>
+          <p class="box-title">Batch Educhain {{ Block['batch_numberOCS'] }}</p>
+        </div>
+      </div>
 
-    <div style="width: 150px; height: 100px; border: 2px solid #333; display: flex; justify-content: center; align-items: center; padding: 10px; text-align: center; background-color: #f0f0f0;">
+      <!-- Arbitrum (Sepolia) -->
+      <div class="column is-4">
+        <div class="box">
+          <p class="has-text-weight-bold">Arbitrum (Sepolia)</p>
+          <p class="box-title">
+            Block Arbitrum 
+            <a href="https://arbitrum-sepolia.blockscout.com/block/{{ Block['l1_block_heightARB'] }}" 
+               title="{{ Block['l1_block_heightARB'] }}" 
+               class="card-footer-item">
+              {{ Block['l1_block_heightARB'] }}
+            </a>
+          </p>
+          <p class="box-title">Batch Arbitrum {{ Block['batch_numberARB'] }}</p>
+          <p class="box-title">Priority Fee Arbitrum {{ Block['priority_feeARB'] }}</p>
+          <p class="box-title">Total Difficulty Arbitrum {{ Block['total_difficultyARB'] }}</p>
+          <p class="box-title">Transactions Fees Arbitrum {{ Block['transaction_feesARB'] }}</p>
+          <p class="box-title">Burnt Fees Arbitrum {{ Block['burnt_feesARB'] }}</p>
+          <p class="box-title">Difficulty Arbitrum {{ Block['difficultyARB'] }}</p>
+          <p class="box-title">Gas Limit Arbitrum {{ Block['gas_limitARB'] }}</p>
+          <p class="box-title">Gas Used Arbitrum {{ Block['gas_usedARB'] }}</p>
+        </div>
+      </div>
 
-         <p class="">Ethereum (Sepolia)</p>
-         <p class="box-title">Block Ethereum <a href="https://eth-sepolia.blockscout.com/block/{{ Block['l1_block_heightETH']}}" title="{{ Block['l1_block_heightETH']}}" class="card-footer-item">{{ Block['l1_block_heightETH']}} </a></p>
-         <p class="box-title">Total difficulty Ethereum {{ Block['total_difficultyETH']}}</p> 
-         <p class="box-title">Difficulty Ethereum {{ Block['difficultyETH']}}</p>
-         <p class="box-title">Gas limit Ethereum {{ Block['gas_limitETH']}}</p>
-         <p class="box-title">Gas used Ethereum {{ Block['gas_usedETH']}}</p>
-         
-
+      <!-- Ethereum (Sepolia) -->
+      <div class="column is-4">
+        <div class="box">
+          <p class="has-text-weight-bold">Ethereum (Sepolia)</p>
+          <p class="box-title">
+            Block Ethereum 
+            <a href="https://eth-sepolia.blockscout.com/block/{{ Block['l1_block_heightETH'] }}" 
+               title="{{ Block['l1_block_heightETH'] }}" 
+               class="card-footer-item">
+              {{ Block['l1_block_heightETH'] }}
+            </a>
+          </p>
+          <p class="box-title">Total Difficulty Ethereum {{ Block['total_difficultyETH'] }}</p>
+          <p class="box-title">Difficulty Ethereum {{ Block['difficultyETH'] }}</p>
+          <p class="box-title">Gas Limit Ethereum {{ Block['gas_limitETH'] }}</p>
+          <p class="box-title">Gas Used Ethereum {{ Block['gas_usedETH'] }}</p>
+        </div>
+      </div>
     </div>
   </div>
+</section>
