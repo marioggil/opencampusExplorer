@@ -21,7 +21,6 @@ from models.db import db
 import private.modelcontract as LLMC
 from schema import select_stadistics_index,select_item_block,select_items_tx,select_item_contract,select_item_bachOCS2ARB,select_item_bachARB2ETH,select_item_bachETH2ETH
 from config.parameters import recaptcha_site_key, recaptcha_secret_key,url_api_educhain,url_api_arbitrum,url_api_ethereum
-
 import logging
 from dataclasses import dataclass
 import os
@@ -673,6 +672,7 @@ def contractsDetail(hash):
     db.contracts.insert(**data)
     db.commit() 
     return {"message":"OK"}
+
 
 @app.post("/wallet/{hash}/tx")
 def TxsWallet(request: Request,hash: str) :#-> Tuple[List[Dict], Set[str], bool]:
