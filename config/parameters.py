@@ -18,6 +18,8 @@ db = DAL(configuration.get('db','uri'),
             migrate_enabled=configuration.get('db','migrate'),
             folder=configuration.get('db','folder')
         )
-
+url_api_educhain="https://educhain.blockscout.com/"
+url_api_arbitrum="https://arbitrum.blockscout.com/"
+url_api_ethereum="https://eth.blockscout.com/"
 recaptcha_site_key = configuration.get('recaptcha','site_key')
 recaptcha_secret_key = configuration.get('recaptcha','secret_key')

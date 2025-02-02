@@ -1,0 +1,98 @@
+
+
+
+<section>
+  <div class="contributions-graph">
+    <h3>Contributions</h3>
+    <div id="graph" class="weeks-container"></div>
+  </div>
+  <div id="tooltip" class="tooltip"></div>
+
+  <script>
+    function getColor(count) {
+      if (count == 0) return '#f2f4f4';
+      if (count <= {{ percentils[0] |safe }}) return '#b2babb';
+      if (count <= {{ percentils[1] |safe }}) return '#7f8c8d';
+      if (count <= {{ percentils[2] |safe }}) return '#616a6b';
+      return '#424949';
+    }
+
+    function createGraph(contributions) {
+      // Convertir las fechas string a objetos Date y crear un mapa
+      var dateMap = {};
+      contributions.forEach(function(item) {
+        dateMap[item.date] = item.count;
+      });
+      
+      var graph = document.getElementById('graph');
+      var tooltip = document.getElementById('tooltip');
+      
+      // Obtener el rango de fechas
+      var now = new Date();
+      var oneYearAgo = new Date(now);
+      oneYearAgo.setFullYear(now.getFullYear() - 1);
+      
+      // Crear array de todas las fechas en el último año
+      var dates = [];
+      var currentDate = new Date(oneYearAgo);
+      
+      while (currentDate <= now) {
+        dates.push(new Date(currentDate));
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+      
+      // Agrupar por semanas
+      var weeks = [];
+      var currentWeek = [];
+      
+      dates.forEach(function(date) {
+        if (currentWeek.length === 7) {
+          weeks.push(currentWeek);
+          currentWeek = [];
+        }
+        currentWeek.push(date);
+      });
+      
+      if (currentWeek.length > 0) {
+        weeks.push(currentWeek);
+      }
+      
+      // Crear el gráfico
+      weeks.forEach(function(week) {
+        var weekElem = document.createElement('div');
+        weekElem.className = 'week';
+        
+        week.forEach(function(date) {
+          var dayElem = document.createElement('div');
+          dayElem.className = 'day';
+          
+          // Formatear fecha para buscar en el mapa
+          var dateStr = date.toISOString().split('T')[0];
+          var count = dateMap[dateStr] || 0;
+          
+          dayElem.style.backgroundColor = getColor(count);
+          
+          dayElem.onmouseover = function(e) {
+            tooltip.textContent = dateStr + ': ' + count + ' contributions';
+            tooltip.style.display = 'block';
+            tooltip.style.left = (e.pageX + 10) + 'px';
+            tooltip.style.top = (e.pageY + 10) + 'px';
+          };
+          
+          dayElem.onmouseout = function() {
+            tooltip.style.display = 'none';
+          };
+          
+          weekElem.appendChild(dayElem);
+        });
+        
+        graph.appendChild(weekElem);
+      });
+    }
+
+    // Ejemplo de datos
+    var sampleData = {{ list_summary_block_day |safe }};
+
+    createGraph(sampleData);
+  </script>
+</section>

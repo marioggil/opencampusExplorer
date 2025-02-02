@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
+"""Explorer of blocks clioscan
 
+Returns:
+    _type_: null
+"""
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse,JSONResponse
 from pydantic import BaseModel
@@ -17,12 +21,12 @@ from typing import List, Set, Tuple, Dict
 from models.db import db
 import private.modelcontract as LLMC
 from schema import select_stadistics_index,select_item_block,select_items_tx,select_item_contract,select_item_bachOCS2ARB,select_item_bachARB2ETH,select_item_bachETH2ETH
-from config.parameters import recaptcha_site_key, recaptcha_secret_key
+from config.parameters import recaptcha_site_key, recaptcha_secret_key,url_api_educhain,url_api_arbitrum,url_api_ethereum
 import datetime
 import logging
 from dataclasses import dataclass
 import os
-
+from datetime import datetime
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
@@ -57,11 +61,11 @@ def blocks_index(items):
     return output
 
 def metricsBlocks():
-    response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/blocks?type=block").content)
+    response=json.loads(requests.get(url_api_educhain+"api/v2/blocks?type=block").content)
     return blocks_index(response)
 
 def stadistics_blockchain():
-    response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/stats").content)
+    response=json.loads(requests.get(url_api_educhain+"api/v2/stats").content)
     return select_stadistics_index(response)
 
 def TxIndex(items):
@@ -78,7 +82,7 @@ def TxIndex(items):
     return output 
 
 def metricsTx():
-    response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/transactions?filter=validated").content)
+    response=json.loads(requests.get(url_api_educhain+"api/v2/transactions?filter=validated").content)
     return TxIndex(response)
 
 @app.get("/", response_class=HTMLResponse)
@@ -251,6 +255,84 @@ def root_section_4(request: Request):
                                             "recaptcha_site_key":recaptcha_site_key
                                             })
 
+@app.get("/root_section_5", response_class=HTMLResponse)
+def root_section_5(request: Request):
+    """
+    Renders a page with all  metrics of Educhain.
+
+    Args:
+        request (Request): The request object.
+
+    Returns:
+        HTMLResponse: Renders the 'indexV2.html' template with metrics.
+    """
+
+
+
+    summary = db.blocks.day_week, db.blocks.hour, db.blocks.tx_count.sum()
+    rows = db(db.blocks.id > 0).select(*summary, groupby=(db.blocks.day_week, db.blocks.hour))
+    summary_blocks_day_week_hour={}
+    
+    for row in rows:
+        summary_blocks_day_week_hour[str(row.blocks.day_week)+"-"+str(row.blocks.hour)]=row[db.blocks.tx_count.sum()]
+    data=[]
+    for row in summary_blocks_day_week_hour.keys():
+        data.append(summary_blocks_day_week_hour[row])
+    percentils=[np.percentile(data, 25),np.percentile(data, 50),np.percentile(data, 75)]
+    return templates.TemplateResponse("root_section_5.html", 
+                                        {
+                                            "request": request,
+                                            "summary_blocks_day_week_hour":summary_blocks_day_week_hour,
+                                            "percentils":percentils,
+                                            "enumerate": enumerate,
+                                            "recaptcha_site_key":recaptcha_site_key
+                                            })
+
+
+
+@app.get("/root_section_6", response_class=HTMLResponse)
+def root_section_6(request: Request):
+    """
+    Renders a page with all  metrics of Educhain.
+
+    Args:
+        request (Request): The request object.
+
+    Returns:
+        HTMLResponse: Renders the 'indexV2.html' template with metrics.
+    """
+    summary = db.blocks.timestamp, db.blocks.tx_count.sum()
+
+    rows = db(db.blocks.id > 0).select(*summary, groupby=db.blocks.timestamp)
+
+    summary_block_day={}
+
+    for row in rows:
+        if row[db.blocks.timestamp].strftime('%Y-%m-%d') not in summary_block_day:
+            summary_block_day[row[db.blocks.timestamp].strftime('%Y-%m-%d')]= row[db.blocks.tx_count.sum()]
+        else:
+            summary_block_day[row[db.blocks.timestamp].strftime('%Y-%m-%d')]+= row[db.blocks.tx_count.sum()]
+    list_summary_block_day=[]
+    data=[]
+    for date in summary_block_day.keys():
+        count=summary_block_day[date]
+        list_summary_block_day.append(
+            {"date": date, "count": count }
+        )
+        data.append(count)
+    percentils=[np.percentile(data, 25),np.percentile(data, 50),np.percentile(data, 75)]
+
+    return templates.TemplateResponse("root_section_6.html", 
+                                        {
+                                            "request": request,
+                                            "enumerate": enumerate,
+                                            "list_summary_block_day":list_summary_block_day,
+                                            "percentils":percentils,
+                                            "recaptcha_site_key":recaptcha_site_key
+                                            })
+
+
+
 
 @app.get("/version", response_class=HTMLResponse)
 def versionhtml(request: Request):
@@ -314,7 +396,6 @@ def block_section_1(request: Request,number:str):
     
     height=int(number)
     Block = db(db.blocks.height == height).select().last()
-    print(Block)
     return templates.TemplateResponse("block_section_1.html", 
                                         {
                                             "request": request,
@@ -326,7 +407,7 @@ def block_section_1(request: Request,number:str):
 
 @app.post("/block/{number}/tx")
 def txperblock(request: Request,number:str):
-    response=json.loads(requests.get('https://edu-chain-testnet.blockscout.com/api/v2/blocks/%s/transactions'%(number)).content)
+    response=json.loads(requests.get(url_api_educhain+'api/v2/blocks/%s/transactions'%(number)).content)
     for item in response["items"]:
         TxDetail(item["hash"])
 
@@ -336,7 +417,7 @@ def Block2db(request: Request,number:str):
     #baseurl=str(request.base_url)
     
     if number=="last":
-        response=json.loads(requests.get("https://edu-chain-testnet.blockscout.com/api/v2/blocks?type=block").content)
+        response=json.loads(requests.get(url_api_educhain+"api/v2/blocks?type=block").content)
         number=response["items"][0]["height"]
     try:
         number=int(number)
@@ -377,7 +458,7 @@ def block_section_2(request: Request,number:str):
 
 def BlockDetail(block):
     try:
-        response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/blocks/%s"%(block)).content)
+        response=json.loads(requests.get(url_api_educhain+"api/v2/blocks/%s"%(block)).content)
         data=select_item_block(response)
         db.blocks.insert(**data)
         db.commit()
@@ -391,15 +472,15 @@ def BlockDetail(block):
 #Blockbach
 
 def bachOCS2ARB(block):
-    response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/blocks/%s"%(block)).content)
+    response=json.loads(requests.get(url_api_educhain+"api/v2/blocks/%s"%(block)).content)
     output=select_item_bachOCS2ARB(block,response)
     return output
 def bachARB2ETH(output):
-    response=json.loads(requests.get("https://arbitrum-sepolia.blockscout.com/api/v2/blocks/%s"%(output['l1_block_heightARB'])).content)
+    response=json.loads(requests.get(url_api_arbitrum+"api/v2/blocks/%s"%(output['l1_block_heightARB'])).content)
     output=select_item_bachARB2ETH(output,response)
     return output
 def bachETH2ETH(output):
-    response=json.loads(requests.get("https://eth-sepolia.blockscout.com/api/v2/blocks/%s"%(output['l1_block_heightETH'])).content)
+    response=json.loads(requests.get(url_api_ethereum+"api/v2/blocks/%s"%(output['l1_block_heightETH'])).content)
     output=select_item_bachETH2ETH(output,response)
     return output
 
@@ -431,14 +512,14 @@ def Blockbatch(request: Request,number:str):
 
 
 def TxVerif(hash):
-    response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/transactions/%s"%(hash)).content)
+    response=json.loads(requests.get(url_api_educhain+"api/v2/transactions/%s"%(hash)).content)
     item=response
     tx=select_items_tx(item)
     return {"message":"OK","block":tx["block"]}
 
 def TxDetail(hash):
     try:
-        response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/transactions/%s"%(hash)).content)
+        response=json.loads(requests.get(url_api_educhain+"api/v2/transactions/%s"%(hash)).content)
         item=response
         tx=select_items_tx(item)
         db.txs.insert(**tx)
@@ -474,6 +555,7 @@ def Txhtml(request: Request,hash: str):
         Tx=s.select().last().as_dict()
     else:
         Tx=s.select().last().as_dict()
+    
 
     return templates.TemplateResponse("tx.html", {"request": request,"Tx":Tx,"recaptcha_site_key":recaptcha_site_key})
 
@@ -492,7 +574,7 @@ def isContract(hash: str,find_online:bool = True) -> int:
     s = db(db.wallets.hash == hash)
     if s.count()==0:
         if find_online:
-            url = f'https://opencampus-codex.blockscout.com/api/v2/smart-contracts/{hash}'
+            url = url_api_educhain+f'api/v2/smart-contracts/{hash}'
             response = requests.get(url)
             if response.status_code == 200:
                 return 1
@@ -507,21 +589,29 @@ def isContract(hash: str,find_online:bool = True) -> int:
 
 
 def contractsDetail(hash):
-    response=json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/smart-contracts/%s"%(hash)).content)
+    response=json.loads(requests.get(url_api_educhain+"api/v2/smart-contracts/%s"%(hash)).content)
     data=select_item_contract(response)
-    DetailContract=LLMC.AnalysisContract(keygroq,data["source_code"])
-    try:
-        DetailContract=json.loads(DetailContract)
-    except:
-        DetailContract=json.loads(DetailContract[DetailContract.find("{"):DetailContract.find("}")+1])
-    data["functionality"]=DetailContract["Functionality Analysis"]
-    data["sectoruse"]=DetailContract["Sector and Use Classification"]
-    data["issues"]=DetailContract["Identification of Potential Issues"]
-    data["summary"]=DetailContract["Summary and Recommendations"]
+    if "source_code" in data.keys() and data["source_code"]!="No code to analysis":
+        
+        DetailContract=LLMC.AnalysisContract(keygroq,data["source_code"])
+        try:
+            DetailContract=json.loads(DetailContract)
+        except:
+            DetailContract=json.loads(DetailContract[DetailContract.find("{"):DetailContract.find("}")+1])
+        data["functionality"]=DetailContract["Functionality Analysis"]
+        data["sectoruse"]=DetailContract["Sector and Use Classification"]
+        data["issues"]=DetailContract["Identification of Potential Issues"]
+        data["summary"]=DetailContract["Summary and Recommendations"]
+    else:
+        data["functionality"]="No code to analysis"
+        data["sectoruse"]="No code to analysis"
+        data["issues"]="No code to analysis"
+        data["summary"]="No code to analysis"
     data["hash"]=hash
     db.contracts.insert(**data)
     db.commit() 
     return {"message":"OK"}
+
 
 @app.post("/wallet/{hash}/tx")
 def TxsWallet(request: Request,hash: str) :#-> Tuple[List[Dict], Set[str], bool]:
@@ -538,8 +628,8 @@ def TxsWallet(request: Request,hash: str) :#-> Tuple[List[Dict], Set[str], bool]
             - A boolean indicating if the wallet is a smart contract.
     """
     #baseurl=str(request.base_url)
-    towallet = requests.get('https://opencampus-codex.blockscout.com/api/v2/addresses/%s/transactions?filter=to'%(hash))
-    fromwallet = requests.get('https://opencampus-codex.blockscout.com/api/v2/addresses/%s/transactions?filter=from'%(hash))
+    towallet = requests.get(url_api_educhain+'api/v2/addresses/%s/transactions?filter=to'%(hash))
+    fromwallet = requests.get(url_api_educhain+'api/v2/addresses/%s/transactions?filter=from'%(hash))
     for source in [towallet,fromwallet]:
         for item in json.loads(source.content)["items"]:
             height=int(item["block_number"])
@@ -594,6 +684,7 @@ def wallethtml(request: Request,wallet: str):
     if s["is_contract"]==1:
         data["Type"]="Contract"
         contract = db(db.contracts.hash == wallet).select().last()
+        data["source code"]=contract['source_code']
         data["Vyper contract"]=contract['is_vyper_contract']
         data["Is fully verified"]=contract['is_fully_verified']
         data["Blueprint"]=contract['is_blueprint']
@@ -614,17 +705,30 @@ def wallethtml(request: Request,wallet: str):
     Tx=requests.get(baseurl+"/wallet/%s/tx"%(wallet)).content
     Result,ranking_to, ranking_from=search_data(wallet)
     len0=[len(Result),len(ranking_to),len(ranking_from)]
+    
     if data["Type"]=="Contract":
-        return templates.TemplateResponse("wallet_contract.html", {"request": request,
-        "Tx":Tx,
-        "data":data,
-        "res":Result,
-        "ranking_to": ranking_to,
-        "ranking_from": ranking_from,
-        "enumerate": enumerate,
-        "Type":data["Type"],
-        "len0":len0,
-        "recaptcha_site_key":recaptcha_site_key})
+        if data["source code"] !="No code to analysis":
+            return templates.TemplateResponse("wallet_contract.html", {"request": request,
+            "Tx":Tx,
+            "data":data,
+            "res":Result,
+            "ranking_to": ranking_to,
+            "ranking_from": ranking_from,
+            "enumerate": enumerate,
+            "Type":data["Type"],
+            "len0":len0,
+            "recaptcha_site_key":recaptcha_site_key})
+        else: 
+            return templates.TemplateResponse("wallet_contract_without_source.html", {"request": request,
+            "Tx":Tx,
+            "data":data,
+            "res":Result,
+            "ranking_to": ranking_to,
+            "ranking_from": ranking_from,
+            "enumerate": enumerate,
+            "Type":data["Type"],
+            "len0":len0,
+            "recaptcha_site_key":recaptcha_site_key})
     if data["Type"]=="Wallet":
                 return templates.TemplateResponse("wallet_user.html", {"request": request,
         "Tx":Tx,
@@ -690,7 +794,9 @@ def color_wallet(wallet:str,walletverif:str):
     if isContract(walletverif,find_online=False)==1:
         return "#744b97"
     if isContract(walletverif,find_online=False)==2:
-        return "#122fe5" 
+        return "#122fe5"
+    if isContract(walletverif,find_online=False)==0:
+        return "#808000"
 
 
 def search_data(wallet: str):
@@ -785,18 +891,18 @@ def Verif_end_point():
         
     monitor = APIMonitor(
     endpoints=[
-            "https://opencampus-codex.blockscout.com/api/v2/blocks?type=block",
-            "https://opencampus-codex.blockscout.com/api/v2/stats",
-            "https://opencampus-codex.blockscout.com/api/v2/transactions?filter=validated",
-            'https://edu-chain-testnet.blockscout.com/api/v2/blocks/%s/transactions'%(10),
-            "https://edu-chain-testnet.blockscout.com/api/v2/blocks?type=block",
-            "https://opencampus-codex.blockscout.com/api/v2/blocks/%s"%(10),
-            "https://arbitrum-sepolia.blockscout.com/api/v2/blocks/%s"%(10),
-            "https://eth-sepolia.blockscout.com/api/v2/blocks/%s"%(10),
-            "https://opencampus-codex.blockscout.com/api/v2/transactions/%s"%("0xbEc6E1B3cc11E14c039A998c292147e8610810b4"),
-            "https://opencampus-codex.blockscout.com/api/v2/smart-contracts/%s"%("0xd819d9457F0272e1DAccf52d2DEed44079aeF25A"),
-            'https://opencampus-codex.blockscout.com/api/v2/addresses/%s/transactions?filter=to'%("0x59F3BfDA995b9235e2a9F126eB2eeA5E0B443428"),
-            'https://opencampus-codex.blockscout.com/api/v2/addresses/%s/transactions?filter=from'%("0x59F3BfDA995b9235e2a9F126eB2eeA5E0B443428")
+            url_api_educhain+"api/v2/blocks?type=block",
+            url_api_educhain+"api/v2/stats",
+            url_api_educhain+"api/v2/transactions?filter=validated",
+            url_api_educhain+'api/v2/blocks/%s/transactions'%(10),
+            url_api_educhain+"api/v2/blocks?type=block",
+            url_api_educhain+"api/v2/blocks/%s"%(10),
+            url_api_arbitrum+"api/v2/blocks/%s"%(10),
+            url_api_ethereum+"api/v2/blocks/%s"%(10),
+            url_api_educhain+"api/v2/transactions/%s"%("0xbEc6E1B3cc11E14c039A998c292147e8610810b4"),
+            url_api_educhain+"api/v2/smart-contracts/%s"%("0xd819d9457F0272e1DAccf52d2DEed44079aeF25A"),
+            url_api_educhain+'api/v2/addresses/%s/transactions?filter=to'%("0x59F3BfDA995b9235e2a9F126eB2eeA5E0B443428"),
+            url_api_educhain+'api/v2/addresses/%s/transactions?filter=from'%("0x59F3BfDA995b9235e2a9F126eB2eeA5E0B443428")
         ]
     )
 
@@ -810,14 +916,14 @@ def Verif_end_point():
         print(f"  Timestamp: {change.timestamp}")
 
     
-    select_stadistics_index( json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/stats").content))
-    select_item_block(json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/blocks?type=block").content)["items"][0])
-    dataOCS=select_item_bachOCS2ARB(10,json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/blocks/%s"%(10)).content))
-    dataOCS=select_item_bachARB2ETH(dataOCS,json.loads(requests.get("https://arbitrum-sepolia.blockscout.com/api/v2/blocks/%s"%(10)).content))
-    dataOCS=select_item_bachETH2ETH(dataOCS,json.loads(requests.get("https://eth-sepolia.blockscout.com/api/v2/blocks/%s"%(10)).content))
-    select_items_tx(json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/transactions?filter=validated").content)["items"][0])
-    select_items_tx(json.loads(requests.get('https://edu-chain-testnet.blockscout.com/api/v2/blocks/%s/transactions'%(10)).content)["items"][0])
-    select_item_contract(json.loads(requests.get("https://opencampus-codex.blockscout.com/api/v2/smart-contracts/%s"%("0xd819d9457F0272e1DAccf52d2DEed44079aeF25A")).content))
+    select_stadistics_index( json.loads(requests.get(url_api_educhain+"api/v2/stats").content))
+    select_item_block(json.loads(requests.get(url_api_educhain+"api/v2/blocks?type=block").content)["items"][0])
+    dataOCS=select_item_bachOCS2ARB(10,json.loads(requests.get(url_api_educhain+"api/v2/blocks/%s"%(10)).content))
+    dataOCS=select_item_bachARB2ETH(dataOCS,json.loads(requests.get(url_api_arbitrum+"api/v2/blocks/%s"%(10)).content))
+    dataOCS=select_item_bachETH2ETH(dataOCS,json.loads(requests.get(url_api_ethereum+"api/v2/blocks/%s"%(10)).content))
+    select_items_tx(json.loads(requests.get(url_api_educhain+"api/v2/transactions?filter=validated").content)["items"][0])
+    select_items_tx(json.loads(requests.get(url_api_educhain+'api/v2/blocks/%s/transactions'%(10)).content)["items"][0])
+    select_item_contract(json.loads(requests.get(url_api_educhain+"api/v2/smart-contracts/%s"%("0xd819d9457F0272e1DAccf52d2DEed44079aeF25A")).content))
     return Salida
 
 @dataclass

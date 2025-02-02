@@ -1,4 +1,13 @@
 
+from datetime import datetime
+
+def change_date_format(date):
+    date=date.split("T")
+    date_p1=date[0].split("-")
+    date_p2=date[1].split(".")[0].split(":")
+    date_final=str(date_p1[0])+"-"+str(date_p1[1])+"-"+str(date_p1[2])+" "+str(date_p2[0])+":"+str(date_p2[1])+":"+str(date_p2[2])
+    print(date_final)
+    return date_final
 
 
 def select_stadistics_index(item):
@@ -36,12 +45,17 @@ def select_item_block(item):
                     data['tx_fees']=int(item[key])
                 elif key=="transaction_count":
                     data['tx_count']=int(item[key])
-
+                elif key=="timestamp":
+                    data[key]=change_date_format(item[key])
                 else:
                     data[key]=item[key]
         except:
             print("select_item_block error", key)
             print("Orig",item.keys() )
+    date_calcs=datetime.strptime(data["timestamp"], "%Y-%m-%d %H:%M:%S")
+    data["day_week"]=date_calcs.strftime('%A')
+    data["day_month"]=date_calcs.day
+    data["hour"]=date_calcs.strftime('%H')
     return data
 
 
@@ -125,11 +139,18 @@ def select_items_tx(item):
                     data[key]=int(item[key]["value"])
                 elif key =="gas_used":
                     data[key]=int(item[key])
+                elif key=="timestamp":
+                    data[key]=change_date_format(item[key])
                 else:
                     data[key]=item[key]
         except:
             print("select_items_tx error", key)
             print("Orig",item.keys() )
+
+    date_calcs=datetime.strptime(data["timestamp"], "%Y-%m-%d %H:%M:%S")
+    data["day_week"]=date_calcs.strftime('%A')
+    data["day_month"]=date_calcs.day
+    data["hour"]=date_calcs.strftime('%H')
     return data
 
 
@@ -145,6 +166,10 @@ def select_item_contract(item):
         except:
             print("select_item_contract error", key)
             print("Orig",item.keys() )
+            if key in ["is_vyper_contract",'is_fully_verified','is_blueprint','is_verified']:
+                data[key]=False
+            else:
+                data[key]="No code to analysis"
     return data
 
     

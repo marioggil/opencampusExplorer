@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <section class="">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-full-mobile is-half-tablet is-two-fifths-desktop" style="padding-top: 2%;">
+                    <h3 class="title" style="text-align: center;">{{ data ['Type']}}: {{ data ['hash']}}</h3>
+                </div>
+            </div>
+        </div>
+    </section> 
+    <div id="wallet_section_ranking" hx-get="{{ data ['hash']}}/ranking" hx-target="#wallet_section_ranking" hx-swap="outerHTML" hx-trigger="load delay:1s"></div>
+
+<section class="section">
+    <div class="container">
+        <h1 class="title is-4">No code</h1>
+    </div>
+</section>
+      
+
+
+
+
+{% endblock %}
