@@ -1,0 +1,66 @@
+
+<section>
+<div class="activity-heatmap">
+    <h3>Activity Heatmap</h3>
+    <div id="grid" class="grid-container"></div>
+  </div>
+  <div id="tooltip" class="tooltip"></div>
+
+  <script>
+    var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    
+    function getColor(count) {
+      if (count == 0) return '#f2f4f4';
+      if (count <= {{ percentils[0] |safe }}) return '#b2babb';
+      if (count <=  {{ percentils[1] |safe }}) return '#7f8c8d';
+      if (count <=  {{ percentils[2] |safe }}) return '#616a6b';
+      return '#424949';
+    }
+
+    function createHeatmap(data) {
+      var grid = document.getElementById('grid');
+      var tooltip = document.getElementById('tooltip');
+      
+      for (var i = 0; i < days.length; i++) {
+        var day = days[i];
+        
+        var dayLabel = document.createElement('div');
+        dayLabel.className = 'day-label';
+        dayLabel.textContent = day;
+        grid.appendChild(dayLabel);
+
+        for (var hour = 0; hour < 24; hour++) {
+          var cell = document.createElement('div');
+          cell.className = 'cell';
+          
+          var key = day + '-' + hour;
+          var count = data[key] || 0;
+          
+          cell.style.backgroundColor = getColor(count);
+          
+          cell.onmouseover = function(e) {
+            tooltip.textContent = this.dataset.info;
+            tooltip.style.display = 'block';
+            tooltip.style.left = (e.pageX + 10) + 'px';
+            tooltip.style.top = (e.pageY + 10) + 'px';
+          };
+
+          cell.onmouseout = function() {
+            tooltip.style.display = 'none';
+          };
+
+          cell.dataset.info = day + ' ' + hour + ':00: ' + count + ' contributions';
+          
+          grid.appendChild(cell);
+        }
+      }
+    }
+
+    // Datos de ejemplo
+    var sampleData = {{ summary_blocks_day_week_hour |safe }} ;
+
+    createHeatmap(sampleData);
+  </script>
+
+</section>
+

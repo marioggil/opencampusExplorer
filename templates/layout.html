@@ -47,6 +47,37 @@
                     <i class="fas fa-sun"></i>
                 </button>
             </a>
+            <select id="searchType">
+                <option value="wallet">Wallet</option>
+                <option value="transaction">Transacción</option>
+                <option value="block">Bloque</option>
+            </select>
+        
+            <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="Introduce el valor a buscar"
+            >
+        
+            <button onclick="searchBlockchain()">Buscar</button>
+        
+            <script>
+                function searchBlockchain() {
+                    const searchType = document.getElementById('searchType').value;
+                    const searchValue = document.getElementById('searchInput').value;
+        
+                    const baseUrls = {
+                        wallet: 'https://clioscan.com.co/wallet/',
+                        transaction: 'https://clioscan.com.co/tx/',
+                        block: 'https://clioscan.com.co/block/'
+                    };
+        
+                    if (searchValue) {
+                        const url = `${baseUrls[searchType]}${searchValue}`;
+                        window.open(url, '_blank');
+                    }
+                }
+            </script>
         </div>
     </header>
 
@@ -58,6 +89,9 @@
     <footer class="footer is-centered">
         <div class="content has-text-centered">
             <p>&copy; 2025 - Powered by FastAPI</p>
+            <p>&copy; This is a app to work in <a href="https://educhain.xyz/" title="Educhain" >Educhain </a></p>
+
+            
             <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
         </div>
     </footer>

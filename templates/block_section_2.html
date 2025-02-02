@@ -3,22 +3,30 @@
     <h1 class="title is-4 has-text-centered">Batch</h1>
 
     <div class="columns is-vcentered is-multiline has-text-centered">
-      <!-- Educhain (Testnet) -->
+      <!-- Educhain -->
       <div class="column is-4">
         <div class="box">
-          <p class="has-text-weight-bold">Educhain (Testnet)</p>
+          <p class="has-text-weight-bold">Educhain</p>
           <p class="box-title">Block Educhain {{ Block['block_heightOCS'] }}</p>
-          <p class="box-title">Batch Educhain {{ Block['batch_numberOCS'] }}</p>
+          <p class="box-title">
+            Batch Educhain 
+          <a href="https://educhain.blockscout.com/batches/{{ Block['batch_numberOCS']  }}" 
+          title="{{ Block['batch_numberOCS'] }}" 
+          class="card-footer-item">
+         {{ Block['batch_numberOCS']  }}
+        </p>
+       </a>
+          
         </div>
       </div>
 
-      <!-- Arbitrum (Sepolia) -->
+      <!-- Arbitrum -->
       <div class="column is-4">
         <div class="box">
-          <p class="has-text-weight-bold">Arbitrum (Sepolia)</p>
+          <p class="has-text-weight-bold">Arbitrum</p>
           <p class="box-title">
             Block Arbitrum 
-            <a href="https://arbitrum-sepolia.blockscout.com/block/{{ Block['l1_block_heightARB'] }}" 
+            <a href="https://arbitrum.blockscout.com/block/{{ Block['l1_block_heightARB'] }}" 
                title="{{ Block['l1_block_heightARB'] }}" 
                class="card-footer-item">
               {{ Block['l1_block_heightARB'] }}
@@ -35,13 +43,13 @@
         </div>
       </div>
 
-      <!-- Ethereum (Sepolia) -->
+      <!-- Ethereum-->
       <div class="column is-4">
         <div class="box">
-          <p class="has-text-weight-bold">Ethereum (Sepolia)</p>
+          <p class="has-text-weight-bold">Ethereum</p>
           <p class="box-title">
             Block Ethereum 
-            <a href="https://eth-sepolia.blockscout.com/block/{{ Block['l1_block_heightETH'] }}" 
+            <a href="https://eth.blockscout.com/block/{{ Block['l1_block_heightETH'] }}" 
                title="{{ Block['l1_block_heightETH'] }}" 
                class="card-footer-item">
               {{ Block['l1_block_heightETH'] }}
