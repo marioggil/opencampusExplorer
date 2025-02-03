@@ -1,7 +1,7 @@
 
 <section>
 <div class="activity-heatmap">
-    <h3>Activity Heatmap</h3>
+    <h3>Activity week x hours</h3>
     <div id="grid" class="grid-container"></div>
   </div>
   <div id="tooltip" class="tooltip"></div>
@@ -49,7 +49,7 @@
             tooltip.style.display = 'none';
           };
 
-          cell.dataset.info = day + ' ' + hour + ':00: ' + count + ' contributions';
+          cell.dataset.info = day + ' ' + hour + ':00: ' + count + ' txs';
           
           grid.appendChild(cell);
         }

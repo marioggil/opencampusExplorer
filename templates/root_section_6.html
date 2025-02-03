@@ -3,7 +3,7 @@
 
 <section>
   <div class="contributions-graph">
-    <h3>Contributions</h3>
+    <h3>Activity in days</h3>
     <div id="graph" class="weeks-container"></div>
   </div>
   <div id="tooltip" class="tooltip"></div>
@@ -73,7 +73,7 @@
           dayElem.style.backgroundColor = getColor(count);
           
           dayElem.onmouseover = function(e) {
-            tooltip.textContent = dateStr + ': ' + count + ' contributions';
+            tooltip.textContent = dateStr + ': ' + count + ' txs';
             tooltip.style.display = 'block';
             tooltip.style.left = (e.pageX + 10) + 'px';
             tooltip.style.top = (e.pageY + 10) + 'px';

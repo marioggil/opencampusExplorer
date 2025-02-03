@@ -13,7 +13,6 @@ from starlette.middleware.cors import CORSMiddleware
 import pandas as pd
 import requests
 import json
-import uuid
 from markupsafe import Markup
 import numpy as np
 from fastapi.templating import Jinja2Templates
@@ -22,11 +21,12 @@ from models.db import db
 import private.modelcontract as LLMC
 from schema import select_stadistics_index,select_item_block,select_items_tx,select_item_contract,select_item_bachOCS2ARB,select_item_bachARB2ETH,select_item_bachETH2ETH
 from config.parameters import recaptcha_site_key, recaptcha_secret_key,url_api_educhain,url_api_arbitrum,url_api_ethereum
-import datetime
+
 import logging
 from dataclasses import dataclass
 import os
 from datetime import datetime
+from ast import literal_eval
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
@@ -43,6 +43,14 @@ def extractConfig(nameModel="SystemData",relPath=os.path.join("private/experimen
         config = json.load(file)[nameModel]
     Output= config[dataOut]
     return Output
+def transform_text2formatedtext(text):
+    list_text = literal_eval(text)
+    sal=""
+    for i in list_text:
+        sal=sal+"""
+"""+i
+    return sal
+        
 keygroq=extractConfig(nameModel="SystemData",dataOut="keygroq")
 baseurl=extractConfig(nameModel="SystemData",dataOut="baseurl")
 #Index
@@ -680,7 +688,6 @@ def wallethtml(request: Request,wallet: str):
     data={}
     s = db(db.wallets.hash == wallet).select().last()
     data["hash"]=wallet
-    print(data)
     if s["is_contract"]==1:
         data["Type"]="Contract"
         contract = db(db.contracts.hash == wallet).select().last()
@@ -694,10 +701,10 @@ def wallethtml(request: Request,wallet: str):
         data["Language"]=contract['language']
         data["Compiler version"]=contract['compiler_version']
         data["Evm version"]=contract['evm_version']
-        data["Funtionality"]=contract['functionality']
+        data["Funtionality"]=transform_text2formatedtext(contract['functionality'])
         data["Sector Use"]=contract['sectoruse']
-        data["Issues"]=contract['issues']
-        data["summary"]=contract['summary']
+        data["Issues"]=transform_text2formatedtext(contract['issues'])
+        data["summary"]=transform_text2formatedtext(contract['summary'])
 
     else:
         data["Type"]="Wallet"
@@ -739,6 +746,106 @@ def wallethtml(request: Request,wallet: str):
         "enumerate": enumerate,
         "Type":data["Type"],
         "recaptcha_site_key":recaptcha_site_key})
+    
+@app.get("/wallet/{wallet}/activityweekhour", response_class=HTMLResponse)
+def activity_week_hour(request: Request,wallet: str):
+    """
+    Renders a page with all  metrics of Educhain.
+
+    Args:
+        request (Request): The request object.
+
+    Returns:
+        HTMLResponse: Renders the 'indexV2.html' template with metrics.
+    """
+
+
+
+    summary = db.txs.day_week, db.txs.hour, db.txs.hash.count()
+    rows = db(db.txs.fromw == wallet or db.txs.tow == wallet).select(*summary, groupby=(db.txs.day_week, db.txs.hour))
+    summary_blocks_day_week_hour={}
+    if len(rows)< 3:
+        return templates.TemplateResponse("root_section_5.html", 
+                                        {
+                                            "request": request,
+                                            "summary_blocks_day_week_hour":summary_blocks_day_week_hour,
+                                            "percentils":[1,2,3],
+                                            "enumerate": enumerate,
+                                            "recaptcha_site_key":recaptcha_site_key
+                                            })
+
+    
+    
+    for row in rows:
+        summary_blocks_day_week_hour[str(row.txs.day_week)+"-"+str(row.txs.hour)]=row[db.txs.hash.count()]
+    data=[]
+    for row in summary_blocks_day_week_hour.keys():
+        data.append(summary_blocks_day_week_hour[row])
+    percentils=[np.percentile(data, 25),np.percentile(data, 50),np.percentile(data, 75)]
+    return templates.TemplateResponse("root_section_5.html", 
+                                        {
+                                            "request": request,
+                                            "summary_blocks_day_week_hour":summary_blocks_day_week_hour,
+                                            "percentils":percentils,
+                                            "enumerate": enumerate,
+                                            "recaptcha_site_key":recaptcha_site_key
+                                            })
+
+
+
+
+
+
+@app.get("/wallet/{wallet}/activity", response_class=HTMLResponse)
+def walletactivity(request: Request,wallet: str):
+    """
+    Renders a page with all  metrics of Educhain.
+
+    Args:
+        request (Request): The request object.
+
+    Returns:
+        HTMLResponse: Renders the 'indexV2.html' template with metrics.
+    """
+    summary = db.txs.timestamp, db.txs.hash.count()
+
+    rows = db(db.txs.fromw == wallet or db.txs.tow == wallet).select(*summary, groupby=db.txs.timestamp)
+
+    summary_block_day={}
+    if len(rows)< 3:
+        return templates.TemplateResponse("root_section_6.html", 
+                                        {
+                                            "request": request,
+                                            "enumerate": enumerate,
+                                            "list_summary_block_day":[],
+                                            "percentils":[1,2,3],
+                                            "recaptcha_site_key":recaptcha_site_key
+                                            })
+
+    for row in rows:
+        if row[db.txs.timestamp].strftime('%Y-%m-%d') not in summary_block_day:
+            summary_block_day[row[db.txs.timestamp].strftime('%Y-%m-%d')]= row[db.txs.hash.count()]
+        else:
+            summary_block_day[row[db.txs.timestamp].strftime('%Y-%m-%d')]+= row[db.txs.hash.count()]
+    list_summary_block_day=[]
+    data=[]
+    for date in summary_block_day.keys():
+        count=summary_block_day[date]
+        list_summary_block_day.append(
+            {"date": date, "count": count }
+        )
+        data.append(count)
+    percentils=[np.percentile(data, 25),np.percentile(data, 50),np.percentile(data, 75)]
+
+    return templates.TemplateResponse("root_section_6.html", 
+                                        {
+                                            "request": request,
+                                            "enumerate": enumerate,
+                                            "list_summary_block_day":list_summary_block_day,
+                                            "percentils":percentils,
+                                            "recaptcha_site_key":recaptcha_site_key
+                                            })
+
 
 @app.get("/wallet/{wallet}/ranking", response_class=HTMLResponse)
 def walletranking(request: Request,wallet: str):
@@ -899,10 +1006,10 @@ def Verif_end_point():
             url_api_educhain+"api/v2/blocks/%s"%(10),
             url_api_arbitrum+"api/v2/blocks/%s"%(10),
             url_api_ethereum+"api/v2/blocks/%s"%(10),
-            url_api_educhain+"api/v2/transactions/%s"%("0xbEc6E1B3cc11E14c039A998c292147e8610810b4"),
-            url_api_educhain+"api/v2/smart-contracts/%s"%("0xd819d9457F0272e1DAccf52d2DEed44079aeF25A"),
-            url_api_educhain+'api/v2/addresses/%s/transactions?filter=to'%("0x59F3BfDA995b9235e2a9F126eB2eeA5E0B443428"),
-            url_api_educhain+'api/v2/addresses/%s/transactions?filter=from'%("0x59F3BfDA995b9235e2a9F126eB2eeA5E0B443428")
+            url_api_educhain+"api/v2/transactions/%s"%("0x2e81c3a9d0D58A98C07Ec4D0520AB914C6A1FcEd"),
+            url_api_educhain+"api/v2/smart-contracts/%s"%("0x1C0c5190a7528d86496a5D2C78549dA702b74a4E"),
+            url_api_educhain+'api/v2/addresses/%s/transactions?filter=to'%("0x2e81c3a9d0D58A98C07Ec4D0520AB914C6A1FcEd"),
+            url_api_educhain+'api/v2/addresses/%s/transactions?filter=from'%("0x2e81c3a9d0D58A98C07Ec4D0520AB914C6A1FcEd")
         ]
     )
 
@@ -923,7 +1030,7 @@ def Verif_end_point():
     dataOCS=select_item_bachETH2ETH(dataOCS,json.loads(requests.get(url_api_ethereum+"api/v2/blocks/%s"%(10)).content))
     select_items_tx(json.loads(requests.get(url_api_educhain+"api/v2/transactions?filter=validated").content)["items"][0])
     select_items_tx(json.loads(requests.get(url_api_educhain+'api/v2/blocks/%s/transactions'%(10)).content)["items"][0])
-    select_item_contract(json.loads(requests.get(url_api_educhain+"api/v2/smart-contracts/%s"%("0xd819d9457F0272e1DAccf52d2DEed44079aeF25A")).content))
+    select_item_contract(json.loads(requests.get(url_api_educhain+"api/v2/smart-contracts/%s"%("0x1C0c5190a7528d86496a5D2C78549dA702b74a4E")).content))
     return Salida
 
 @dataclass
@@ -1038,7 +1145,7 @@ class APIMonitor:
                 
                 for field in cached_fields - current_fields:
                     change = APIChange(
-                        timestamp=datetime.datetime.now().isoformat(),
+                        timestamp=datetime.now().isoformat(),
                         field_name=field,
                         old_value=field,
                         new_value="REMOVED",
@@ -1050,7 +1157,7 @@ class APIMonitor:
                 
                 for field in current_fields - cached_fields:
                     change = APIChange(
-                        timestamp=datetime.datetime.now().isoformat(),
+                        timestamp=datetime.now().isoformat(),
                         field_name=field,
                         old_value="NEW",
                         new_value=field,
