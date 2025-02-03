@@ -6,7 +6,6 @@ databases
 !/private/appconfig.ini.example
 Testers.ipynb
 test.py
-
 test.json
 api_changes.log
 api_schema_cache.json
@@ -21,3 +20,4 @@ path1653.png
 path1654.png
 path1655.png
 photo_2025-01-18_22-07-46.jpg
+
