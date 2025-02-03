@@ -96,14 +96,33 @@
         <p class="content">{{ data["Funtionality"] }}</p>
         
         <h1 class="title is-4">Sector Use</h1>
-        <p class="content">{{ data["Sector Use"] }}</p>
+        <p class="content">{{ data["Sector Use"]}}</p>
         
         <h1 class="title is-4">Issues</h1>
-        <p class="content">{{ data["Issues"] }}</p>
+        <p class="content">{{ data["Issues"]}}</p>
         
         <h1 class="title is-4">Summary</h1>
-        <p class="content">{{ data["summary"] }}</p>
+        <p class="content">{{ data["summary"]}}</p>
     </div>
+</section>
+
+<section class="section">
+    <div id="wallet_section_activityweekhour" 
+    hx-get="{{ data['hash'] }}/activityweekhour" 
+    hx-target="#wallet_section_activityweekhour" 
+    hx-swap="outerHTML" 
+    hx-trigger="load delay:1s">
+    </div>
+    </section>
+
+
+<section class="section">
+<div id="wallet_section_activity" 
+hx-get="{{ data['hash'] }}/activity" 
+hx-target="#wallet_section_activity" 
+hx-swap="outerHTML" 
+hx-trigger="load delay:1s">
+</div>
 </section>
       
 
