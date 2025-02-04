@@ -47,19 +47,24 @@
                     <i class="fas fa-sun"></i>
                 </button>
             </a>
-            <select id="searchType">
-                <option value="wallet">Wallet</option>
-                <option value="transaction">Transacción</option>
-                <option value="block">Bloque</option>
-            </select>
+            <div class="control">
+                <div class="select is-info">
+                    <select id="searchType">
+                        <option value="wallet">Wallet</option>
+                        <option value="transaction">Transacción</option>
+                        <option value="block">Bloque</option>
+                    </select>
+                </div>
+            </div>
         
-            <input 
-                type="text" 
-                id="searchInput" 
-                placeholder="Enter the search"
-            >
-        
-            <button onclick="searchBlockchain()">Search</button>
+            <div class="control is-expanded">
+                <input class="input is-info" type="text" id="searchInput" placeholder="Enter the search">
+            </div>
+            <div class="control">
+                <button class="button is-info" onclick="searchBlockchain()">
+                    Search
+                </button>
+            </div>
         
             <script>
                 function searchBlockchain() {
