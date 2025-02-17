@@ -732,7 +732,7 @@ def wallethtml(request: Request,wallet: str):
         HTMLResponse: Renders the 'index.html' template with metrics.
     """
     #baseurl=str(request.base_url)
-
+    
     s = db(db.wallets.hash == wallet)
     if s.count()==0:
         requests.post(baseurl+"/wallet/%s"%(wallet))
@@ -790,6 +790,7 @@ def wallethtml(request: Request,wallet: str):
             "len0":len0,
             "recaptcha_site_key":recaptcha_site_key})
     if data["Type"]=="Wallet":
+                print("Wallet")
                 return templates.TemplateResponse("wallet_user.html", {"request": request,
         "Tx":Tx,
         "data":data,
@@ -930,6 +931,27 @@ def TxsInOut(request: Request,wallet: str):
         
         alltx.append(tx.as_dict())
     return alltx
+
+
+@app.get("/wallet/{wallet}/tokens")
+def tokens_wallets(request: Request,wallet: str):
+    tokens=json.loads(requests.get(url_api_educhain+"api/v2/addresses/%s/token-balances"%(wallet)).content)
+    nft=[]
+    ft=[]
+    for token in tokens:
+        if token["token"]["type"]=="ERC-20":
+
+            ft.append({"contract":token["token"]["address"],"holders":token["token"]["holders"],'value': int(token["value"])/10**int(token["token"]["decimals"]),
+                       'name': token["token"]["name"], 'symbol': token["token"]["symbol"]})
+        if token["token"]["type"]=="ERC-721" or token["token"]["type"]=="ERC-1155":
+            nft.append({"contract":token["token"]["address"],"holders":token["token"]["holders"],'value': token["value"],
+                        'name': token["token"]["name"], 'symbol': token["token"]["symbol"]})
+    return templates.TemplateResponse("wallet_tokens.html", {"request": request,
+        "ft":ft,
+        "nft": nft,
+        "recaptcha_site_key":recaptcha_site_key})
+    
+
 
 def sorted_actions(walletsactions: Dict[str, int]) -> List[Tuple[str, int]]:
     """

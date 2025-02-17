@@ -1,0 +1,53 @@
+<section class="section">
+    <h1 class="title is-6">Fungible Token</h1>
+    <div class="container">
+        <div class="columns is-multiline">
+            {% for i in ft %}
+            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">                
+                
+                <div class="box box-index">
+                    <div style="text-align: center;">
+                        <p title="{{ i["name"]}}" class="">Name: {{ i["name"] }}</p>
+                        <p title="{{ i["symbol"]}}" class="">Symbol: {{ i["symbol"] }}</p>
+                        <p title="{{ i["contract"]}}" class="">Contract {{ i["contract"][:30] + '...' }}</p>
+                        <p  class="">Holders {{ i["holders"]}}</p>
+                        <p  class="">value {{ i["value"]}}</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-server"></i>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+<section class="section">
+    <h1 class="title is-6">Non Fungible Token</h1>
+    <div class="container">
+        <div class="columns is-multiline">
+            {% for i in nft %}
+            <div class="column is-full-mobile is-half-tablet is-one-third-desktop">                
+                
+                <div class="box box-index">
+                    <div style="text-align: center;">
+                        <p title="{{ i["name"]}}" class="">Name: {{ i["name"] }}</p>
+                        <p title="{{ i["symbol"]}}" class="">Symbol: {{ i["symbol"] }}</p>
+                        <p title="{{ i["contract"]}}" class="">Contract {{ i["contract"][:30] + '...' }}</p>
+                        <p  class="">Holders {{ i["holders"]}}</p>
+                        <p  class="">value {{ i["value"]}}</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-server"></i>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</section>
+
+
+
+

@@ -40,6 +40,13 @@ hx-trigger="load delay:1s">
 </div>
 </section>
 
-
+<section class="section">
+    <div id="wallet_section_tokens" 
+    hx-get="{{ data['hash'] }}/tokens" 
+    hx-target="#wallet_section_tokens" 
+    hx-swap="outerHTML" 
+    hx-trigger="load delay:1s">
+    </div>
+    </section>
 
 {% endblock %}
