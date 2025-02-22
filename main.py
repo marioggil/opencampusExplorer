@@ -507,7 +507,7 @@ def block_section_2(request: Request,number:str):
     
     height=int(number)
     Block = db(db.blocksbach.block_heightOCS == height).select().last()
-    print(Block)
+    #print(Block)
     return templates.TemplateResponse("block_section_2.html", 
                                         {
                                             "request": request,
@@ -790,7 +790,7 @@ def wallethtml(request: Request,wallet: str):
             "len0":len0,
             "recaptcha_site_key":recaptcha_site_key})
     if data["Type"]=="Wallet":
-                print("Wallet")
+                #print("Wallet")
                 return templates.TemplateResponse("wallet_user.html", {"request": request,
         "Tx":Tx,
         "data":data,
@@ -969,22 +969,6 @@ def tokens_wallets(request: Request,wallet: str):
     
 
 
-def sorted_actions(walletsactions: Dict[str, int]) -> List[Tuple[str, int]]:
-    """
-    Retrieves the top 5 wallets based on the number of actions, sorted in descending order.
-
-    Args:
-        walletsactions (Dict[str, int]): A dictionary where keys are wallet IDs and values are the number of actions.
-
-    Returns:
-        List[Tuple[str, int]]: A list of tuples containing the top 5 wallet IDs and their action counts.
-                            If there are fewer than 5 wallets, all of them are returned.
-    """
-    # Sort wallets by the number of actions in descending order
-    sorted_wallets_by_actions = sorted(walletsactions.items(), key=lambda x: x[1], reverse=True)
-
-    # Return the top 5 wallets, or fewer if there aren't that many
-    return sorted_wallets_by_actions[:5]
 
 def color_wallet(wallet:str,walletverif:str):
     if wallet==walletverif:
@@ -1040,7 +1024,7 @@ def categoriedb2json(categoryT="tx_count",tableT="blocks"):
     category=db[tableT][categoryT]
     table=db[tableT]
     query = category.count()
-    print(table)
+    #print(table)
     result = db(table).select(category, query, groupby=category)
     
     return json.dumps({r[tableT][categoryT]: r[query] for r in result})

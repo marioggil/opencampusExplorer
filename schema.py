@@ -6,7 +6,7 @@ def change_date_format(date):
     date_p1=date[0].split("-")
     date_p2=date[1].split(".")[0].split(":")
     date_final=str(date_p1[0])+"-"+str(date_p1[1])+"-"+str(date_p1[2])+" "+str(date_p2[0])+":"+str(date_p2[1])+":"+str(date_p2[2])
-    print(date_final)
+    
     return date_final
 
 
