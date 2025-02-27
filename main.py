@@ -850,8 +850,9 @@ def activity_week_hour(request: Request,wallet: str):
 
 
     summary = db.txs.day_week, db.txs.hour, db.txs.hash.count()
-    rows = db(db.txs.fromw == wallet or db.txs.tow == wallet).select(*summary, groupby=(db.txs.day_week, db.txs.hour))
+    rows = db((db.txs.fromw == wallet) | (db.txs.tow == wallet)).select(*summary, groupby=(db.txs.day_week, db.txs.hour))
     summary_blocks_day_week_hour={}
+    print(22223,len(rows))
     if len(rows)< 3:
         return templates.TemplateResponse("root_section_5.html", 
                                         {
@@ -897,7 +898,7 @@ def walletactivity(request: Request,wallet: str):
     """
     summary = db.txs.timestamp, db.txs.hash.count()
 
-    rows = db(db.txs.fromw == wallet or db.txs.tow == wallet).select(*summary, groupby=db.txs.timestamp)
+    rows = db((db.txs.fromw == wallet) | (db.txs.tow == wallet)).select(*summary, groupby=db.txs.timestamp)
 
     summary_block_day={}
     if len(rows)< 3:
