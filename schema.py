@@ -120,8 +120,10 @@ def select_item_bachETH2ETH(dataOCS,response):
 
 def select_items_tx(item):
     data={}
+    print(item)
     for key in ['timestamp',"fee",'block_number','method',"from",'tx_burnt_fee',"hash",'priority_fee','transaction_types','gas_used','created_contract',"to",'result','revert_reason','transaction_tag','has_error_in_internal_transactions']:
         try:
+            print(key,item)
             if item[key] is None:
                 pass
             else:

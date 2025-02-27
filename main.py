@@ -43,7 +43,11 @@ def extractConfig(nameModel="SystemData",relPath=os.path.join("private/experimen
     Output= config[dataOut]
     return Output
 def transform_text2formatedtext(text):
-    list_text = literal_eval(text)
+    print(text,type(text))
+    try:
+        list_text = literal_eval(text)
+    except:
+        return text
     sal=""
     for i in list_text:
         sal=sal+"""
@@ -55,6 +59,23 @@ baseurl=extractConfig(nameModel="SystemData",dataOut="baseurl")
 #Index
 
 def blocks_index(items):
+    """
+    Computes block index statistics from a given collection of items.
+
+    Args:
+        items (Dict[str, List]): A dictionary containing a list of items to process, where each item is expected to have 'size', 'tx_count', 'tx_fees', and 'gas_used' properties.
+        
+    Returns:
+        Dict[str, Union[List, int]]: A dictionary containing:
+        - items (List): The list of processed items
+        - mean_size (int): The mean size of the items
+        - mean_tx_count (int): The mean transaction count of the items
+        - mean_tx_fees (int): The mean transaction fees of the items
+        - mean_gas_used (int): The mean gas used by the items
+    Raises:
+        KeyError: If the 'items' key is missing from the input dictionary or if any item is missing 'size', 'tx_count', 'tx_fees', or 'gas_used' properties.
+        TypeError: If the input 'items' is not a dictionary or if any item in the list is not a dictionary with the required properties.
+        ValueError: If the input list is empty or if any of the mean calculations result in NaN or infinity."""
     list_data=[]
     for item in items["items"]:
         data = select_item_block(item)
@@ -67,7 +88,20 @@ def blocks_index(items):
     output={"items":list_data,"mean_size":mean_size,"mean_tx_count":mean_tx_count,"mean_tx_fees":mean_tx_fees,"mean_gas_used":mean_gas_used}
     return output
 
+
 def metricsBlocks():
+    """
+    Retrieves block metrics from the Educhain API and processes the response.
+    
+    Args:
+        None
+    Returns:
+        type: Return value of the blocks_index function, which depends on its implementation.
+        Note: This function does not provide a direct return type, as it delegates the processing to the blocks_index function.
+                    
+    Raises:
+        RequestException: If the GET request to the Educhain API fails.
+        JSONDecodeError: If the API response is not valid JSON."""
     response=json.loads(requests.get(url_api_educhain+"api/v2/blocks?type=block").content)
     return blocks_index(response)
 
@@ -971,6 +1005,24 @@ def tokens_wallets(request: Request,wallet: str):
 
 
 def color_wallet(wallet:str,walletverif:str):
+    """Determines the color representation for a given wallet based on verification and contract status.
+    
+    Args:
+    
+    wallet (str): The original wallet string.
+    walletverif (str): The wallet verification string to compare with the original wallet.
+    
+    Returns:
+    
+    str: A hexadecimal color code representing the wallet status.
+    "#4b4d4c" if the wallet and verification strings match
+    "#744b97" if the wallet verification is a contract with status 1
+    "#122fe5" if the wallet verification is a contract with status 2
+    "#808000\" if the wallet verification is not a contract or has status 0
+    
+    Raises:
+    
+    None: This function does not explicitly raise any exceptions."""
     if wallet==walletverif:
         return "#4b4d4c"
     if isContract(walletverif,find_online=False)==1:
@@ -979,6 +1031,8 @@ def color_wallet(wallet:str,walletverif:str):
         return "#122fe5"
     if isContract(walletverif,find_online=False)==0:
         return "#808000"
+
+
 
 
 def search_data(wallet: str):

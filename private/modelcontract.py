@@ -43,7 +43,20 @@ Respond only with valid JSON. Do not write an introduction or summary.
 
 
 def AnalysisContract(keygroq,source):
-    
+    """
+    Contacts Groq API to complete a message based on a given source.
+
+    Args:
+        keygroq (str): The API key used to authenticate the Groq client.
+                source (str): The source to be used in the chat completion prompt.
+                
+    Returns:
+        str: The completed message content, specifically the first choice from the chat completion.
+        - This content is based on the source provided and the Groq model "llama-3.3-70b-versatile" used for the completion.
+                        
+    Raises:
+        Exception: If there's an issue with the API key, the Groq client, or the chat completion request, an exception may be raised.
+        - This can happen if the API key is invalid, if there's a network issue, or if the Groq service is unavailable."""    
     from groq import Groq
     client = Groq(
     api_key=keygroq,
@@ -58,3 +71,17 @@ def AnalysisContract(keygroq,source):
         model="llama-3.3-70b-versatile",
     )
     return chat_completion.choices[0].message.content
+"""
+Contacts Groq API to complete a message based on a given source.
+
+Args:
+    keygroq (str): The API key used to authenticate the Groq client.
+            source (str): The source to be used in the chat completion prompt.
+            
+Returns:
+    str: The completed message content, specifically the first choice from the chat completion.
+                    - This content is based on the source provided and the Groq model "llama-3.3-70b-versatile" used for the completion.
+                    
+                    Raises:
+                            Exception: If there's an issue with the API key, the Groq client, or the chat completion request, an exception may be raised.
+                                          - This can happen if the API key is invalid, if there's a network issue, or if the Groq service is unavailable."""
